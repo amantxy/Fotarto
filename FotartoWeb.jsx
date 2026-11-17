@@ -129,9 +129,9 @@ export default function FotartoWeb() {
             </div>
             <div className="mt-12">
               <img 
-                src="https://images.unsplash.com/photo-1542038784456-1ea8e935640e?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80" 
-                alt="Interior del estudio" 
-                className="w-full h-64 md:h-96 object-cover rounded-lg border border-[#8D93AB]/30 opacity-80 hover:opacity-100 transition-opacity"
+                src="assets/img/logo-fotarto.jpg" 
+                alt="Logotipo de Fotarto: cámara con diafragma turquesa y la letra f" 
+                className="w-full max-w-3xl mx-auto block rounded-xl border-2 border-[#00E5FF] glow-box"
               />
             </div>
           </section>
