@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Camera, Aperture, ChevronRight, Send, MapPin, Phone, Mail } from 'lucide-react';
+import { Camera, Aperture, ChevronRight, Send, MapPin, Phone, Mail, Users } from 'lucide-react';
 
 export default function FotartoWeb() {
   const [activeTab, setActiveTab] = useState('Fotarto');
@@ -311,6 +311,31 @@ export default function FotartoWeb() {
                       <p className="font-bold text-white">Email</p>
                       <p>reservas@fotarto.es</p>
                     </div>
+                  </div>
+                </div>
+
+                {/* Nuestro Equipo */}
+                <div className="pt-6 border-t border-[#8D93AB]/30">
+                  <h3 className="text-2xl font-playfair font-bold text-white mb-4 flex items-center gap-3">
+                    <Users className="w-6 h-6 text-[#00E5FF]" /> Nuestro Equipo
+                  </h3>
+                  <div className="grid sm:grid-cols-2 gap-3">
+                    {[
+                      { nombre: 'Alba', email: 'alba@fotarto.com' },
+                      { nombre: 'AlexIA', email: 'alexia@fotarto.com' },
+                      { nombre: 'ClaudIA', email: 'claudia@fotarto.com' },
+                      { nombre: 'SonIA', email: 'sonia@fotarto.com' },
+                    ].map((p) => (
+                      <a key={p.email} href={`mailto:${p.email}`} className="flex items-center gap-3 p-4 bg-[#151720] rounded-lg border border-[#8D93AB]/30 hover:border-[#00E5FF] transition-colors group">
+                        <div className="w-11 h-11 shrink-0 rounded-full bg-[#00E5FF]/10 border border-[#00E5FF]/50 flex items-center justify-center font-playfair font-bold text-lg text-[#00E5FF]">
+                          {p.nombre[0]}
+                        </div>
+                        <div className="min-w-0">
+                          <p className="font-bold text-white">{p.nombre}</p>
+                          <p className="text-sm text-[#8D93AB] group-hover:text-[#00E5FF] transition-colors truncate">{p.email}</p>
+                        </div>
+                      </a>
+                    ))}
                   </div>
                 </div>
 
