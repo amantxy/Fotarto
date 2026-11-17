@@ -309,7 +309,7 @@ export default function FotartoWeb() {
                     <div className="p-3 bg-[#151720] rounded-full text-[#00E5FF]"><Mail className="w-6 h-6" /></div>
                     <div>
                       <p className="font-bold text-white">Email</p>
-                      <p>reservas@fotarto.es</p>
+                      <p>reservas@fotarto.luz</p>
                     </div>
                   </div>
                 </div>
