@@ -56,6 +56,11 @@ export default function FotartoWeb() {
         .intro-saliendo { animation: introFondo 1.1s ease-in forwards; }
         .intro-saliendo .intro-contenido { animation: introZoom 1.1s cubic-bezier(.6,0,.9,.4) forwards; }
         .intro-saliendo .intro-pista { display: none; }
+        /* Flash de cámara al entrar */
+        @keyframes introFlash { 0% { opacity: 0; } 7% { opacity: 1; } 22% { opacity: 0.9; } 100% { opacity: 0; } }
+        .intro-flash { position: absolute; inset: 0; pointer-events: none; opacity: 0;
+          z-index: 5; background: radial-gradient(circle at center, #FFFFFF 0%, #FFFFFF 25%, #E6FDFF 45%, rgba(0,229,255,0.6) 70%, rgba(0,229,255,0.15) 100%); }
+        .intro-saliendo .intro-flash { animation: introFlash 0.9s ease-out forwards; }
       `}} />
 
       {/* PORTADA DE ENTRADA */}
@@ -73,6 +78,7 @@ export default function FotartoWeb() {
               Fotarto
             </span>
           </div>
+          <span className="intro-flash" aria-hidden="true" />
           <span className="intro-pista absolute bottom-16 text-sm md:text-base tracking-[0.4em] uppercase text-[#8D93AB]">
             Toca para entrar
           </span>
