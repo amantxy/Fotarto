@@ -14,8 +14,8 @@ export default function FotartoWeb() {
 
   const tabs = [
     'Fotarto',
-    'De donde venimos',
-    'A donde vamos',
+    'De dónde venimos',
+    'A dónde vamos',
     'Nuestro Estudio',
     'Tarifas',
     'Contacto'
@@ -27,7 +27,7 @@ export default function FotartoWeb() {
     { id: 2, title: 'Pack Comunión/Bautizo', price: 'desde 199€', desc: 'Sesión en Sala Premium BBC + Álbum Digital maquetado.' },
     { id: 3, title: 'Pack Boda "Cine" 4K', price: 'desde 899€', desc: 'Cobertura total del evento + Reportaje cinematográfico.' },
     { id: 4, title: 'Sala Multiusos', price: '30€ / hora', desc: 'Ciclorama blanco, raíles de techo, ventanas de luz natural.' },
-    { id: 5, title: 'Sala Cine de Acción', price: '45€ / hora', desc: 'Black box, iluminación LED RGB, máquinas de humo y atrezzo.' },
+    { id: 5, title: 'Sala Cine de Acción', price: '45€ / hora', desc: 'Black box, iluminación LED RGB, máquinas de humo y atrezo.' },
     { id: 6, title: 'Bono Creativo (10h)', price: '250€', desc: '10 horas de estudio a tu disposición. Ahorra un 15%.' },
   ];
 
@@ -138,7 +138,7 @@ export default function FotartoWeb() {
         )}
 
         {/* --- SECCIÓN: DE DONDE VENIMOS --- */}
-        {activeTab === 'De donde venimos' && (
+        {activeTab === 'De dónde venimos' && (
           <section className="animate-in fade-in slide-in-from-bottom-4 duration-700">
             <h2 className="text-4xl md:text-5xl font-playfair font-bold text-[#00E5FF] mb-8">Nuestros Orígenes</h2>
             <div className="grid md:grid-cols-2 gap-12 items-center">
@@ -171,7 +171,7 @@ export default function FotartoWeb() {
         )}
 
         {/* --- SECCIÓN: A DONDE VAMOS --- */}
-        {activeTab === 'A donde vamos' && (
+        {activeTab === 'A dónde vamos' && (
           <section className="animate-in fade-in slide-in-from-bottom-4 duration-700">
             <h2 className="text-4xl md:text-5xl font-playfair font-bold text-[#00E5FF] mb-8">Transformación Digital (UT2)</h2>
             <div className="text-lg text-[#8D93AB] mb-12 max-w-4xl">
