@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Fotarto · Estudio de Fotografía</title>
+  <meta name="description" content="Fotarto - Estudio de fotografía, salas, eventos y Tu Funko en 3D. Proyecto TSP (DAW1B)." />
+
+  <!-- Tailwind (CDN) -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Babel para traducir el JSX en el navegador -->
+  <script src="https://unpkg.com/@babel/standalone@7/babel.min.js"></script>
+
+  <!-- Librerías: React y los iconos de lucide -->
+  <script type="importmap">
+  {
+    "imports": {
+      "react": "https://esm.sh/react@18.3.1",
+      "react-dom/client": "https://esm.sh/react-dom@18.3.1/client?external=react",
+      "lucide-react": "https://esm.sh/lucide-react@0.460.0?external=react"
+    }
+  }
+  </script>
+
+  <style>
+    body { margin: 0; background: #0B0C10; }
+    /* Animación de entrada de las secciones (equivale a animate-in fade-in slide-in-from-bottom-4) */
+    .animate-in { animation: fotartoIn 0.7s ease-out both; }
+    @keyframes fotartoIn {
+      from { opacity: 0; transform: translateY(1rem); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    #cargando {
+      min-height: 100vh; display: flex; align-items: center; justify-content: center;
+      color: #00E5FF; font-family: sans-serif; letter-spacing: .3em;
+    }
+  </style>
+</head>
+<body>
+  <div id="root"><div id="cargando">FOTARTO</div></div>
+
+  <script type="module">
+    // Carga el componente FotartoWeb.jsx, lo traduce con Babel y lo pinta en la página.
+    import React from 'react';
+    import { createRoot } from 'react-dom/client';
+
+    const fuente = await (await fetch('FotartoWeb.jsx')).text();
+    const codigo = Babel.transform(fuente, {
+      presets: [['react', { runtime: 'classic' }]],
+      filename: 'FotartoWeb.jsx'
+    }).code;
+
+    const url = URL.createObjectURL(new Blob([codigo], { type: 'text/javascript' }));
+    const { default: FotartoWeb } = await import(url);
+
+    createRoot(document.getElementById('root')).render(React.createElement(FotartoWeb));
+  </script>
+</body>
+</html>
