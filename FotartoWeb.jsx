@@ -3,6 +3,14 @@ import { Camera, Aperture, ChevronRight, Send, MapPin, Phone, Mail } from 'lucid
 
 export default function FotartoWeb() {
   const [activeTab, setActiveTab] = useState('Fotarto');
+  // Portada de entrada: 'visible' -> 'saliendo' (animación) -> 'oculta'
+  const [intro, setIntro] = useState('visible');
+
+  const entrar = () => {
+    if (intro !== 'visible') return;
+    setIntro('saliendo');
+    setTimeout(() => setIntro('oculta'), 1100);
+  };
 
   const tabs = [
     'Fotarto',
@@ -32,7 +40,42 @@ export default function FotartoWeb() {
         .font-montserrat { font-family: 'Montserrat', sans-serif; }
         .glow-text { text-shadow: 0 0 15px rgba(0,229,255,0.6); }
         .glow-box { box-shadow: 0 0 15px rgba(0,229,255,0.2); }
+
+        /* Portada tipo Netflix */
+        @keyframes introGiro { to { transform: rotate(360deg); } }
+        @keyframes introAparece { from { opacity: 0; transform: scale(0.85); } to { opacity: 1; transform: scale(1); } }
+        @keyframes introLatido { 0%,100% { filter: drop-shadow(0 0 18px rgba(0,229,255,0.5)); } 50% { filter: drop-shadow(0 0 45px rgba(0,229,255,0.95)); } }
+        @keyframes introParpadeo { 0%,100% { opacity: 0.35; } 50% { opacity: 1; } }
+        @keyframes introZoom { 0% { transform: scale(1); opacity: 1; } 60% { opacity: 1; } 100% { transform: scale(14); opacity: 0; } }
+        @keyframes introFondo { 0%,40% { opacity: 1; } 100% { opacity: 0; } }
+        .intro-contenido { animation: introAparece 1.2s ease-out both; }
+        .intro-logo { animation: introGiro 3s linear infinite, introLatido 2.4s ease-in-out infinite; }
+        .intro-pista { animation: introParpadeo 2s ease-in-out infinite; }
+        .intro-saliendo { animation: introFondo 1.1s ease-in forwards; }
+        .intro-saliendo .intro-contenido { animation: introZoom 1.1s cubic-bezier(.6,0,.9,.4) forwards; }
+        .intro-saliendo .intro-pista { display: none; }
       `}} />
+
+      {/* PORTADA DE ENTRADA */}
+      {intro !== 'oculta' && (
+        <button
+          type="button"
+          onClick={entrar}
+          aria-label="Entrar en la web de Fotarto"
+          className={`fixed inset-0 z-[100] w-full h-full bg-[#0B0C10] flex flex-col items-center justify-center cursor-pointer select-none focus:outline-none ${intro === 'saliendo' ? 'intro-saliendo' : ''}`}
+          style={{ background: 'radial-gradient(circle at center, #10232b 0%, #0B0C10 65%)' }}
+        >
+          <div className="intro-contenido flex flex-col items-center">
+            <Aperture className="intro-logo w-40 h-40 md:w-56 md:h-56 text-[#00E5FF]" strokeWidth={1.5} />
+            <span className="mt-8 text-5xl md:text-7xl font-playfair font-bold tracking-[0.3em] uppercase glow-text text-white pl-[0.3em]">
+              Fotarto
+            </span>
+          </div>
+          <span className="intro-pista absolute bottom-16 text-sm md:text-base tracking-[0.4em] uppercase text-[#8D93AB]">
+            Toca para entrar
+          </span>
+        </button>
+      )}
 
       {/* HEADER & NAVEGACIÓN */}
       <header className="pt-12 pb-6 px-4 border-b border-[#8D93AB]/30 bg-[#0B0C10] sticky top-0 z-50">
