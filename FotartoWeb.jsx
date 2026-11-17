@@ -360,7 +360,7 @@ export default function FotartoWeb() {
                     className="w-full rounded-lg border-2 border-[#00E5FF] glow-box"
                   />
                   <img
-                    src="assets/img/uniforme-vistas.jpg"
+                    src="assets/img/uniforme-trabajo.jpg"
                     alt="Uniforme de trabajo Fotarto: vista frontal, lateral y trasera del polo negro con detalles turquesa"
                     className="w-full rounded-lg border-2 border-[#00E5FF] glow-box"
                   />
