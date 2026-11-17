@@ -321,10 +321,10 @@ export default function FotartoWeb() {
                   </h3>
                   <div className="grid sm:grid-cols-2 gap-3">
                     {[
-                      { nombre: 'Alba', email: 'alba@fotarto.com' },
-                      { nombre: 'AlexIA', email: 'alexia@fotarto.com' },
-                      { nombre: 'ClaudIA', email: 'claudia@fotarto.com' },
-                      { nombre: 'SonIA', email: 'sonia@fotarto.com' },
+                      { nombre: 'Alba', email: 'alba@fotarto.luz' },
+                      { nombre: 'AlexIA', email: 'alexia@fotarto.luz' },
+                      { nombre: 'ClaudIA', email: 'claudia@fotarto.luz' },
+                      { nombre: 'SonIA', email: 'sonia@fotarto.luz' },
                     ].map((p) => (
                       <a key={p.email} href={`mailto:${p.email}`} className="flex items-center gap-3 p-4 bg-[#151720] rounded-lg border border-[#8D93AB]/30 hover:border-[#00E5FF] transition-colors group">
                         <div className="w-11 h-11 shrink-0 rounded-full bg-[#00E5FF]/10 border border-[#00E5FF]/50 flex items-center justify-center font-playfair font-bold text-lg text-[#00E5FF]">
