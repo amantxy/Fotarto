@@ -4,10 +4,13 @@ Web del estudio de fotografía **Fotarto** — Proyecto de *Transformación para
 
 ## Estructura
 
-- `index.html` — página de entrada; carga React, Tailwind y los iconos desde CDN.
-- `FotartoWeb.jsx` — el componente con todo el contenido de la web (secciones, tarifas, contacto).
+- `FotartoWeb.jsx` — el componente React con todo el contenido (secciones, tarifas, contacto).
+- `main.jsx` — arranca el componente en la página.
+- `estilos.css` + `tailwind.config.js` — estilos Tailwind.
+- `index.html` — página de entrada.
+- `assets/app.js` y `assets/app.css` — versión compilada que se publica (React + iconos + Tailwind).
 
-Para cambiar el contenido basta con editar `FotartoWeb.jsx`; no hace falta compilar nada.
+Si se edita `FotartoWeb.jsx` hay que volver a generar `assets/` (esbuild + Tailwind CLI).
 
 ## Ver la web
 
