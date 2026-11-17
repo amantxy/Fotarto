@@ -266,7 +266,7 @@ export default function FotartoWeb() {
           <section className="animate-in fade-in slide-in-from-bottom-4 duration-700">
             <h2 className="text-4xl md:text-5xl font-playfair font-bold text-[#00E5FF] mb-8">Reserva tu sesión</h2>
             
-            <div className="grid lg:grid-cols-2 gap-12">
+            <div className="grid lg:grid-cols-2 gap-12 lg:items-start">
               {/* Formulario */}
               <div className="bg-[#151720] p-8 rounded-xl border border-[#8D93AB]/30">
                 <form className="space-y-6" onSubmit={(e) => e.preventDefault()}>
