@@ -1,8 +1,21 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef, Suspense, lazy } from 'react';
 import { Camera, Aperture, ChevronRight, Send, MapPin, Phone, Mail, Users } from 'lucide-react';
+
+// El simulador 3D se descarga solo cuando se abre su pestaña (la web inicial sigue siendo ligera)
+const TuEstudio = lazy(() => import('./TuEstudio.jsx'));
 
 export default function FotartoWeb() {
   const [activeTab, setActiveTab] = useState('Fotarto');
+  // Altura real de la cabecera fija (la usa el visor de «Tu estudio» para quedarse justo debajo)
+  const cabeceraRef = useRef(null);
+  useEffect(() => {
+    const h = cabeceraRef.current;
+    if (!h) return;
+    const ro = new ResizeObserver(() => document.documentElement.style.setProperty('--alto-cabecera', `${h.offsetHeight}px`));
+    ro.observe(h);
+    return () => ro.disconnect();
+  }, []);
+
   // Portada de entrada: 'visible' -> 'saliendo' (animación) -> 'oculta'
   const [intro, setIntro] = useState('visible');
 
@@ -17,6 +30,7 @@ export default function FotartoWeb() {
     'De dónde venimos',
     'A dónde vamos',
     'Nuestro Estudio',
+    'Tu estudio',
     'Tarifas',
     'Contacto'
   ];
@@ -98,7 +112,7 @@ export default function FotartoWeb() {
       )}
 
       {/* HEADER & NAVEGACIÓN */}
-      <header className="pt-4 pb-3 md:pt-12 md:pb-6 px-4 border-b border-[#8D93AB]/30 bg-[#0B0C10] sticky top-0 z-50">
+      <header ref={cabeceraRef} className="pt-4 pb-3 md:pt-12 md:pb-6 px-4 border-b border-[#8D93AB]/30 bg-[#0B0C10] sticky top-0 z-50">
         <div className="max-w-6xl mx-auto flex flex-col items-center">
           {/* Logo */}
           <div className="flex items-center gap-2 md:gap-3 mb-3 md:mb-6 cursor-pointer" onClick={() => setActiveTab('Fotarto')}>
@@ -264,6 +278,13 @@ export default function FotartoWeb() {
               ))}
             </div>
           </section>
+        )}
+
+        {/* --- SECCIÓN: TU ESTUDIO (simulador de luz) --- */}
+        {activeTab === 'Tu estudio' && (
+          <Suspense fallback={<p className="text-center text-[#8D93AB] py-24 tracking-widest uppercase">Preparando el estudio…</p>}>
+            <TuEstudio />
+          </Suspense>
         )}
 
         {/* --- SECCIÓN: TARIFAS --- */}
