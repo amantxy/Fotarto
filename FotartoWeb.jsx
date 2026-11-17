@@ -8,6 +8,7 @@ export default function FotartoWeb() {
     'Fotarto',
     'De donde venimos',
     'A donde vamos',
+    'Nuestro Estudio',
     'Tarifas',
     'Contacto'
   ];
@@ -158,6 +159,42 @@ export default function FotartoWeb() {
                   Cuando tu Funko o tus fotos están listas, el sistema te envía automáticamente un WhatsApp. Adiós a las llamadas telefónicas no contestadas.
                 </p>
               </div>
+            </div>
+          </section>
+        )}
+
+        {/* --- SECCIÓN: NUESTRO ESTUDIO --- */}
+        {activeTab === 'Nuestro Estudio' && (
+          <section className="animate-in fade-in slide-in-from-bottom-4 duration-700">
+            <h2 className="text-4xl md:text-5xl font-playfair font-bold text-[#00E5FF] mb-4">Nuestro Estudio</h2>
+            <p className="text-lg text-[#8D93AB] mb-8 max-w-4xl">
+              Así es Fotarto por dentro: tres salas especializadas, una recepción con taller 3D y una zona de edición y poscopia, todo en un mismo espacio.
+            </p>
+
+            <a href="assets/img/plano-estudio.jpg" target="_blank" rel="noopener noreferrer" className="block">
+              <img
+                src="assets/img/plano-estudio.jpg"
+                alt="Plano de distribución de Fotarto: Sala Multiusos, Sala Eventos BBC, Sala Cine de Acción, Recepción y Taller 3D, y Edición y Poscopia"
+                className="w-full rounded-xl border-2 border-[#00E5FF] glow-box"
+              />
+            </a>
+            <p className="text-center text-sm text-[#8D93AB] mt-3 mb-12">Plano de distribución · Toca la imagen para verla en grande</p>
+
+            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+              {[
+                { t: 'Sala 1: Multiusos', d: 'Ciclorama blanco, raíles de iluminación en el techo y ventanas de luz natural.' },
+                { t: 'Sala 2: Eventos BBC', d: 'Ambiente cálido y elegante para bodas, bautizos y comuniones.' },
+                { t: 'Sala 3: Cine de Acción', d: 'Black box con focos, tubos LED, máquinas de humo y cámaras de vídeo.' },
+                { t: 'Recepción y Taller 3D', d: 'Atención al cliente, vitrinas e impresoras de resina donde nacen los Funkos 3D.' },
+                { t: 'Edición y Poscopia', d: 'Puestos de retoque, impresión fotográfica y restauración digital.' },
+              ].map((zona) => (
+                <div key={zona.t} className="p-6 border border-[#8D93AB]/30 rounded-lg bg-[#151720] hover:border-[#00E5FF] transition-colors">
+                  <h3 className="text-xl font-bold text-white mb-2 flex items-center gap-2">
+                    <MapPin className="w-5 h-5 text-[#00E5FF]" /> {zona.t}
+                  </h3>
+                  <p className="text-[#8D93AB] text-sm">{zona.d}</p>
+                </div>
+              ))}
             </div>
           </section>
         )}
