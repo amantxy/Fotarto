@@ -14,4 +14,4 @@ Si se edita `FotartoWeb.jsx` hay que volver a generar `assets/` (esbuild + Tailw
 
 ## Ver la web
 
-Publicada con GitHub Pages: https://amantxy.github.io/fotarto/
+Publicada con GitHub Pages: https://amantxy.github.io/Fotarto/
