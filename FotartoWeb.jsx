@@ -40,6 +40,8 @@ export default function FotartoWeb() {
         .font-montserrat { font-family: 'Montserrat', sans-serif; }
         .glow-text { text-shadow: 0 0 15px rgba(0,229,255,0.6); }
         .glow-box { box-shadow: 0 0 15px rgba(0,229,255,0.2); }
+        .no-scrollbar { scrollbar-width: none; }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
 
         /* Portada tipo Netflix */
         @keyframes introGiro { to { transform: rotate(360deg); } }
@@ -78,23 +80,27 @@ export default function FotartoWeb() {
       )}
 
       {/* HEADER & NAVEGACIÓN */}
-      <header className="pt-12 pb-6 px-4 border-b border-[#8D93AB]/30 bg-[#0B0C10] sticky top-0 z-50">
+      <header className="pt-4 pb-3 md:pt-12 md:pb-6 px-4 border-b border-[#8D93AB]/30 bg-[#0B0C10] sticky top-0 z-50">
         <div className="max-w-6xl mx-auto flex flex-col items-center">
           {/* Logo */}
-          <div className="flex items-center gap-3 mb-6 cursor-pointer" onClick={() => setActiveTab('Fotarto')}>
-            <Aperture className="w-12 h-12 text-[#00E5FF] animate-[spin_10s_linear_infinite]" />
-            <h1 className="text-5xl md:text-6xl font-playfair font-bold tracking-[0.2em] uppercase glow-text">
+          <div className="flex items-center gap-2 md:gap-3 mb-3 md:mb-6 cursor-pointer" onClick={() => setActiveTab('Fotarto')}>
+            <Aperture className="w-8 h-8 md:w-12 md:h-12 text-[#00E5FF] animate-[spin_10s_linear_infinite]" />
+            <h1 className="text-3xl md:text-6xl font-playfair font-bold tracking-[0.2em] uppercase glow-text">
               Fotarto
             </h1>
           </div>
           
           {/* Tabs */}
-          <nav className="flex flex-wrap justify-center gap-2 md:gap-4">
+          <nav className="no-scrollbar flex md:flex-wrap md:justify-center gap-2 md:gap-4 w-full md:w-auto overflow-x-auto md:overflow-visible px-1 py-1">
             {tabs.map((tab) => (
               <button
                 key={tab}
-                onClick={() => setActiveTab(tab)}
-                className={`px-4 py-2 text-sm md:text-base font-semibold transition-all duration-300 rounded-full border 
+                onClick={(e) => {
+                  setActiveTab(tab);
+                  e.currentTarget.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+                  window.scrollTo({ top: 0, behavior: 'smooth' });
+                }}
+                className={`shrink-0 whitespace-nowrap px-3 py-1.5 md:px-4 md:py-2 text-sm md:text-base font-semibold transition-all duration-300 rounded-full border 
                   ${activeTab === tab 
                     ? 'border-[#00E5FF] bg-[#00E5FF]/10 text-[#00E5FF] glow-box' 
                     : 'border-transparent text-[#8D93AB] hover:text-white hover:border-[#8D93AB]/50'
