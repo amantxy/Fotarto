@@ -9,7 +9,7 @@ export default function FotartoWeb() {
   const entrar = () => {
     if (intro !== 'visible') return;
     setIntro('saliendo');
-    setTimeout(() => setIntro('oculta'), 1100);
+    setTimeout(() => setIntro('oculta'), 1000);
   };
 
   const tabs = [
@@ -44,23 +44,32 @@ export default function FotartoWeb() {
         .no-scrollbar::-webkit-scrollbar { display: none; }
 
         /* Portada tipo Netflix */
+        /* Solo se animan transform y opacity: la tarjeta gráfica lo mueve sin recalcular la página (fluido en móvil) */
         @keyframes introGiro { to { transform: rotate(360deg); } }
         @keyframes introAparece { from { opacity: 0; transform: scale(0.85); } to { opacity: 1; transform: scale(1); } }
-        @keyframes introLatido { 0%,100% { filter: drop-shadow(0 0 18px rgba(0,229,255,0.5)); } 50% { filter: drop-shadow(0 0 45px rgba(0,229,255,0.95)); } }
+        @keyframes introLatido { 0%,100% { opacity: 0.45; transform: scale(0.9); } 50% { opacity: 1; transform: scale(1.1); } }
         @keyframes introParpadeo { 0%,100% { opacity: 0.35; } 50% { opacity: 1; } }
-        @keyframes introZoom { 0% { transform: scale(1); opacity: 1; } 60% { opacity: 1; } 100% { transform: scale(14); opacity: 0; } }
-        @keyframes introFondo { 0%,40% { opacity: 1; } 100% { opacity: 0; } }
-        .intro-contenido { animation: introAparece 1.2s ease-out both; }
-        .intro-logo { animation: introGiro 3s linear infinite, introLatido 2.4s ease-in-out infinite; }
-        .intro-pista { animation: introParpadeo 2s ease-in-out infinite; }
-        .intro-saliendo { animation: introFondo 1.1s ease-in forwards; }
-        .intro-saliendo .intro-contenido { animation: introZoom 1.1s cubic-bezier(.6,0,.9,.4) forwards; }
+        @keyframes introZoom { 0% { transform: scale(1); opacity: 1; } 100% { transform: scale(5); opacity: 0; } }
+        @keyframes introFondo { 0%,35% { opacity: 1; } 100% { opacity: 0; } }
+        @keyframes introFlash { 0% { opacity: 0; } 8% { opacity: 1; } 25% { opacity: 0.85; } 100% { opacity: 0; } }
+        .intro-contenido { animation: introAparece 1.2s ease-out both; will-change: transform, opacity; backface-visibility: hidden; }
+        .intro-logo { animation: introGiro 3s linear infinite; will-change: transform; }
+        .intro-halo { position: absolute; inset: -35%; border-radius: 9999px; pointer-events: none;
+          background: radial-gradient(circle, rgba(0,229,255,0.55) 0%, rgba(0,229,255,0) 65%);
+          animation: introLatido 2.4s ease-in-out infinite; will-change: transform, opacity; }
+        .intro-pista { animation: introParpadeo 2s ease-in-out infinite; will-change: opacity; }
+        .intro-saliendo { animation: introFondo 1s ease-in forwards; will-change: opacity; }
+        .intro-saliendo .intro-contenido { animation: introZoom 1s cubic-bezier(.5,0,.75,0) forwards; }
         .intro-saliendo .intro-pista { display: none; }
         /* Flash de cámara al entrar */
-        @keyframes introFlash { 0% { opacity: 0; } 7% { opacity: 1; } 22% { opacity: 0.9; } 100% { opacity: 0; } }
-        .intro-flash { position: absolute; inset: 0; pointer-events: none; opacity: 0;
-          z-index: 5; background: radial-gradient(circle at center, #FFFFFF 0%, #FFFFFF 25%, #E6FDFF 45%, rgba(0,229,255,0.6) 70%, rgba(0,229,255,0.15) 100%); }
-        .intro-saliendo .intro-flash { animation: introFlash 0.9s ease-out forwards; }
+        .intro-flash { position: absolute; inset: 0; pointer-events: none; opacity: 0; z-index: 5;
+          will-change: opacity; transform: translateZ(0);
+          background: radial-gradient(circle at center, #FFFFFF 0%, #FFFFFF 25%, #E6FDFF 45%, rgba(0,229,255,0.6) 70%, rgba(0,229,255,0.15) 100%); }
+        .intro-saliendo .intro-flash { animation: introFlash 0.8s ease-out forwards; }
+        @media (prefers-reduced-motion: reduce) {
+          .intro-logo, .intro-halo, .intro-pista { animation: none; }
+          .intro-saliendo .intro-contenido { animation: introFondo 0.6s ease-in forwards; }
+        }
       `}} />
 
       {/* PORTADA DE ENTRADA */}
@@ -73,7 +82,10 @@ export default function FotartoWeb() {
           style={{ background: 'radial-gradient(circle at center, #10232b 0%, #0B0C10 65%)' }}
         >
           <div className="intro-contenido flex flex-col items-center">
-            <Aperture className="intro-logo w-40 h-40 md:w-56 md:h-56 text-[#00E5FF]" strokeWidth={1.5} />
+            <div className="relative">
+              <span className="intro-halo" aria-hidden="true" />
+              <Aperture className="intro-logo relative w-40 h-40 md:w-56 md:h-56 text-[#00E5FF]" strokeWidth={1.5} />
+            </div>
             <span className="mt-8 text-5xl md:text-7xl font-playfair font-bold tracking-[0.3em] uppercase glow-text text-white pl-[0.3em]">
               Fotarto
             </span>
