@@ -234,14 +234,22 @@ export default function FotartoWeb() {
                   </div>
                 </div>
 
-                {/* Uniforme Placeholder */}
-                <div className="pt-6 border-t border-[#8D93AB]/30">
-                  <img 
-                    src="https://images.unsplash.com/photo-1517841905240-472988babdf9?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80" 
-                    alt="Uniforme Fotarto" 
-                    className="w-full h-64 object-cover rounded-lg border-2 border-[#00E5FF] glow-box mb-3"
+                {/* Uniforme Oficial */}
+                <div className="pt-6 border-t border-[#8D93AB]/30 space-y-4">
+                  <p className="text-center font-playfair text-2xl text-[#00E5FF] italic">Uniforme Oficial Fotarto</p>
+                  <img
+                    src="assets/img/uniforme-vistas.jpg"
+                    alt="Uniforme de trabajo Fotarto: vista frontal, lateral y trasera del polo negro con detalles turquesa"
+                    className="w-full rounded-lg border-2 border-[#00E5FF] glow-box"
                   />
-                  <p className="text-center font-playfair text-[#00E5FF] italic">Uniforme Oficial Fotarto</p>
+                  <img
+                    src="assets/img/uniforme-equipo.jpg"
+                    alt="Equipo de Fotarto con el uniforme oficial en el estudio"
+                    className="w-full h-80 md:h-96 object-cover object-top rounded-lg border-2 border-[#00E5FF] glow-box"
+                  />
+                  <p className="text-center text-lg font-semibold text-white">
+                    ¡También te diseñamos tu propio uniforme para que quede tan chulo como el nuestro!
+                  </p>
                 </div>
               </div>
             </div>
