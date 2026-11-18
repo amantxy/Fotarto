@@ -5,6 +5,7 @@ import { Camera, Aperture, Send, MapPin, Phone, Mail, Users } from 'lucide-react
 const TuEstudio = lazy(() => import('./TuEstudio.jsx'));
 const FunkoPagina = lazy(() => import('./FunkoPagina.jsx'));
 import Zonas from './Zonas.jsx';
+import Musica from './Musica.jsx';
 import { AGENDA_INICIAL, AgendaPapel, ProcesoDigital, SalasAntes, EjemploReal } from './Transformacion.jsx';
 
 export default function FotartoWeb() {
@@ -443,6 +444,9 @@ export default function FotartoWeb() {
           </section>
         )}
       </main>
+
+      {/* REPRODUCTOR DE MÚSICA (lateral, en todas las pestañas) */}
+      {intro === 'oculta' && <Musica />}
 
       {/* FOOTER */}
       <footer className="border-t border-[#8D93AB]/30 py-8 text-center text-sm text-[#8D93AB]">

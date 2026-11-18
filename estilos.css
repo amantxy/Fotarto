@@ -23,3 +23,7 @@ body { margin: 0; background: #0B0C10; }
   from { opacity: 0; transform: translateY(1rem); }
   to   { opacity: 1; transform: translateY(0); }
 }
+
+/* ecualizador del reproductor */
+@keyframes eq { 0%, 100% { transform: scaleY(0.3); } 50% { transform: scaleY(1); } }
+.animate-\[eq_0\.9s_ease-in-out_infinite\] { transform-origin: bottom; }
