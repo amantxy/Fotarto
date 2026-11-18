@@ -49,7 +49,6 @@ export default function FotartoWeb() {
     <div className="min-h-screen bg-[#0B0C10] text-[#FFFFFF] font-montserrat flex flex-col">
       {/* Inyección de fuentes y estilos globales para asegurar que carguen siempre */}
       <style dangerouslySetInnerHTML={{__html: `
-        @import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,600;1,400&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&display=swap');
         .font-playfair { font-family: 'Playfair Display', serif; }
         .font-montserrat { font-family: 'Montserrat', sans-serif; }
         .glow-text { text-shadow: 0 0 15px rgba(0,229,255,0.6); }
@@ -211,7 +210,7 @@ export default function FotartoWeb() {
         {/* --- SECCIÓN: A DONDE VAMOS --- */}
         {activeTab === 'A dónde vamos' && (
           <section className="animate-in fade-in slide-in-from-bottom-4 duration-700">
-            <h2 className="text-4xl md:text-5xl font-playfair font-bold text-[#00E5FF] mb-8">Transformación Digital (UT2)</h2>
+            <h2 className="text-4xl md:text-5xl font-playfair font-bold text-[#00E5FF] mb-8">Transformación Digital</h2>
             <div className="text-lg text-[#8D93AB] mb-12 max-w-4xl">
               <p>
                 Dejamos atrás el papel para dar un salto hacia el futuro. Nuestro nuevo plan de digitalización integral interconecta todos los procesos del estudio, garantizando que el talento de nuestro equipo no se pierda en labores administrativas.
@@ -409,7 +408,7 @@ export default function FotartoWeb() {
 
       {/* FOOTER */}
       <footer className="border-t border-[#8D93AB]/30 py-8 text-center text-sm text-[#8D93AB]">
-        <p>© 2026 Fotarto - Transformación para el sistema productivo (Proyecto UT2 - DAW).</p>
+        <p>2026 · Transformación para el sistema productivo</p>
       </footer>
     </div>
   );

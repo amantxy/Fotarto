@@ -87,14 +87,44 @@ const POSES = {
   perfil: { nombre: 'Perfil', giro: 80 },
 };
 
+// Colores de luz: temperaturas de color (en Kelvin) y geles de colores
 const TONOS = {
-  neutra: { nombre: 'Neutra', hex: '#FFFFFF' },
-  calida: { nombre: 'Cálida', hex: '#FFC58A' },
-  fria: { nombre: 'Fría', hex: '#BFD9FF' },
-  turquesa: { nombre: 'Gel turquesa', hex: '#00E5FF' },
+  vela: { nombre: 'Vela (1900 K)', hex: '#FF9329', grupo: 'temp' },
+  tungsteno: { nombre: 'Tungsteno (3200 K)', hex: '#FFC58A', grupo: 'temp' },
+  calida: { nombre: 'Cálida (4000 K)', hex: '#FFD9B0', grupo: 'temp' },
+  neutra: { nombre: 'Luz de día (5600 K)', hex: '#FFFFFF', grupo: 'temp' },
+  nublado: { nombre: 'Nublado (7000 K)', hex: '#DCE7FF', grupo: 'temp' },
+  fria: { nombre: 'Sombra fría (9000 K)', hex: '#BFD3FF', grupo: 'temp' },
+  rojo: { nombre: 'Gel rojo', hex: '#FF2D2D', grupo: 'gel' },
+  naranja: { nombre: 'Gel naranja (CTO)', hex: '#FF8A1F', grupo: 'gel' },
+  ambar: { nombre: 'Gel ámbar', hex: '#FFB300', grupo: 'gel' },
+  amarillo: { nombre: 'Gel amarillo', hex: '#FFE94D', grupo: 'gel' },
+  verde: { nombre: 'Gel verde', hex: '#38E86B', grupo: 'gel' },
+  turquesa: { nombre: 'Gel turquesa Fotarto', hex: '#00E5FF', grupo: 'gel' },
+  azul: { nombre: 'Gel azul (CTB)', hex: '#3D7BFF', grupo: 'gel' },
+  violeta: { nombre: 'Gel violeta', hex: '#8A4DFF', grupo: 'gel' },
+  magenta: { nombre: 'Gel magenta', hex: '#FF2DD1', grupo: 'gel' },
+  rosa: { nombre: 'Gel rosa', hex: '#FF8FC4', grupo: 'gel' },
 };
 
-const FONDOS = { negro: '#0E0F12', gris: '#5E636E', blanco: '#F2F2F2' };
+const FONDOS = {
+  negro: { nombre: 'Negro', hex: '#0E0F12' },
+  grisOscuro: { nombre: 'Gris marengo', hex: '#2E3138' },
+  gris: { nombre: 'Gris', hex: '#5E636E' },
+  blanco: { nombre: 'Blanco', hex: '#F2F2F2' },
+  crema: { nombre: 'Crema', hex: '#E8DCC6' },
+  azulNoche: { nombre: 'Azul noche', hex: '#14233F' },
+  turquesa: { nombre: 'Turquesa Fotarto', hex: '#00A5BD' },
+  croma: { nombre: 'Verde croma', hex: '#1FA34A' },
+  burdeos: { nombre: 'Burdeos', hex: '#5A1424' },
+  mostaza: { nombre: 'Mostaza', hex: '#C9962B' },
+  rosa: { nombre: 'Rosa pastel', hex: '#F2C4CE' },
+};
+
+// Un color puede ser uno de la lista o uno libre elegido con el selector (#rrggbb)
+const hexTono = (t) => (TONOS[t] ? TONOS[t].hex : t);
+const hexFondo = (f) => (FONDOS[f] ? FONDOS[f].hex : f);
+const nombreColor = (lista, c) => (lista[c] ? lista[c].nombre : `Personalizado (${c.toUpperCase()})`);
 
 const aplicarEsquema = (id) => {
   const e = ESQUEMAS[id];
@@ -125,7 +155,7 @@ function crearEscena(canvas) {
   scene.add(ambiente);
 
   // Fondo (papel de estudio)
-  const fondoMat = new THREE.MeshStandardMaterial({ color: FONDOS.gris, roughness: 1 });
+  const fondoMat = new THREE.MeshStandardMaterial({ color: FONDOS.gris.hex, roughness: 1 });
   const fondo = new THREE.Mesh(new THREE.PlaneGeometry(6, 4), fondoMat);
   fondo.position.set(0, -0.2, -1.3);
   fondo.receiveShadow = true;
@@ -139,32 +169,75 @@ function crearEscena(canvas) {
   const tela = new THREE.MeshStandardMaterial({ color: 0x15161a, roughness: 0.85 });
   const ribete = new THREE.MeshStandardMaterial({ color: 0x00b8cc, roughness: 0.6 });
 
-  // Torso con el polo de Fotarto: continúa el busto 3D por debajo de los hombros
-  const perfil = [
-    [0.0, -0.95], [0.158, -0.95], [0.162, -0.62], [0.17, -0.42], [0.18, -0.26], [0.19, -0.17], [0.188, -0.135], [0.17, -0.115], [0.0, -0.11],
-  ].map(([x, y]) => new THREE.Vector2(x, y));
-  const torso = new THREE.Mesh(new THREE.LatheGeometry(perfil, 48), tela);
-  torso.scale.set(1, 1, 0.58);
+  // ---- Cuerpo del maniquí: continúa el busto 3D con el polo de Fotarto ----
+  // Pieza torneada (como en un torno): perfil [radio, altura] que gira alrededor del eje vertical
+  const torneada = (perfil, mat, seg = 40) => {
+    // el perfil debe ir de abajo arriba para que las caras miren hacia fuera
+    const pts = perfil[0][1] > perfil[perfil.length - 1][1] ? [...perfil].reverse() : perfil;
+    const m = new THREE.Mesh(new THREE.LatheGeometry(pts.map(([r, y]) => new THREE.Vector2(r, y)), seg), mat);
+    m.castShadow = m.receiveShadow = true;
+    return m;
+  };
+
+  // Torso: hombros, pecho, cintura y cadera
+  const torso = torneada([
+    [0.0, -0.95], [0.152, -0.95], [0.157, -0.86], [0.15, -0.74], [0.142, -0.62], [0.146, -0.52],
+    [0.155, -0.42], [0.16, -0.32], [0.166, -0.24], [0.176, -0.18], [0.18, -0.14], [0.165, -0.118], [0.12, -0.108], [0.0, -0.105],
+  ], tela, 56);
+  torso.scale.set(1, 1, 0.6);
   torso.position.z = -0.05;
-  torso.castShadow = torso.receiveShadow = true;
   sujeto.add(torso);
 
-  // Brazos: manga del polo con puño turquesa y antebrazo
-  const pielLisa = new THREE.MeshStandardMaterial({ color: 0xb98f78, roughness: 0.6 });
+  // Costuras turquesa laterales del polo (como el uniforme real)
   for (const lado of [-1, 1]) {
-    const brazo = new THREE.Group();
-    brazo.position.set(lado * 0.2, -0.15, -0.05);
-    brazo.rotation.z = lado * 0.07;
-    const manga = new THREE.Mesh(new THREE.CapsuleGeometry(0.052, 0.17, 6, 20), tela);
-    manga.position.y = -0.1;
-    const puno = new THREE.Mesh(new THREE.TorusGeometry(0.047, 0.006, 8, 28), ribete);
-    puno.rotation.x = Math.PI / 2;
-    puno.position.y = -0.235;
-    const antebrazo = new THREE.Mesh(new THREE.CapsuleGeometry(0.038, 0.42, 6, 20), pielLisa);
-    antebrazo.position.y = -0.47;
-    for (const m of [manga, antebrazo]) { m.castShadow = m.receiveShadow = true; }
-    brazo.add(manga, puno, antebrazo);
-    sujeto.add(brazo);
+    const costura = new THREE.Mesh(new THREE.CylinderGeometry(0.0035, 0.0035, 0.78, 8), ribete);
+    costura.position.set(lado * 0.147, -0.6, -0.05);
+    costura.rotation.z = lado * -0.03;
+    sujeto.add(costura);
+  }
+  // Bajo del polo
+  const bajo = new THREE.Mesh(new THREE.TorusGeometry(0.153, 0.004, 8, 56), ribete);
+  bajo.rotation.x = Math.PI / 2; bajo.scale.set(1, 0.6, 1); bajo.position.set(0, -0.9, -0.05);
+  sujeto.add(bajo);
+
+  // Brazos articulados: hombro → manga → brazo → codo → antebrazo → mano
+  const pielLisa = new THREE.MeshStandardMaterial({ color: 0xc69a82, roughness: 0.62 });
+  for (const lado of [-1, 1]) {
+    const hombro = new THREE.Group();
+    hombro.position.set(lado * 0.178, -0.155, -0.05);
+    hombro.rotation.z = lado * 0.13;
+    sujeto.add(hombro);
+
+    const deltoide = new THREE.Mesh(new THREE.SphereGeometry(0.056, 28, 20), tela);
+    deltoide.scale.set(1, 0.85, 0.92);
+    deltoide.castShadow = deltoide.receiveShadow = true;
+    hombro.add(deltoide);
+    // manga del polo (algo más ancha que el brazo) y su puño turquesa
+    hombro.add(torneada([[0.0, 0.0], [0.056, 0.0], [0.055, -0.06], [0.052, -0.145], [0.05, -0.165], [0.0, -0.165]], tela));
+    const puno = new THREE.Mesh(new THREE.TorusGeometry(0.0495, 0.0045, 8, 32), ribete);
+    puno.rotation.x = Math.PI / 2; puno.position.y = -0.162;
+    hombro.add(puno);
+    // brazo hasta el codo
+    hombro.add(torneada([[0.0, -0.13], [0.045, -0.13], [0.042, -0.21], [0.036, -0.28], [0.03, -0.3], [0.0, -0.305]], pielLisa));
+    const codo = new THREE.Group();
+    codo.position.y = -0.29;
+    codo.rotation.x = -0.22; // antebrazo ligeramente hacia delante
+    hombro.add(codo);
+    const articulacion = new THREE.Mesh(new THREE.SphereGeometry(0.034, 20, 14), pielLisa);
+    articulacion.castShadow = true;
+    codo.add(articulacion);
+    codo.add(torneada([[0.0, 0.015], [0.03, 0.01], [0.037, -0.04], [0.036, -0.1], [0.03, -0.19], [0.025, -0.25], [0.0, -0.255]], pielLisa));
+    // mano relajada
+    const mano = new THREE.Mesh(new THREE.SphereGeometry(0.05, 24, 18), pielLisa);
+    mano.scale.set(0.62, 1.45, 0.34);
+    mano.position.set(lado * -0.004, -0.31, 0.004);
+    mano.rotation.y = lado * 0.5;
+    mano.castShadow = mano.receiveShadow = true;
+    codo.add(mano);
+    const pulgar = new THREE.Mesh(new THREE.CapsuleGeometry(0.011, 0.04, 4, 10), pielLisa);
+    pulgar.position.set(lado * -0.022, -0.285, 0.018);
+    pulgar.rotation.z = lado * 0.5;
+    codo.add(pulgar);
   }
 
   // Focos
@@ -250,7 +323,7 @@ function actualizarEscena(e, { luces, plano, angulo, pose, fondo }) {
   camara.updateProjectionMatrix();
 
   // Fondo
-  fondoMat.color.set(FONDOS[fondo]);
+  fondoMat.color.set(hexFondo(fondo));
 
   // Focos (posición relativa al estudio, no al modelo)
   for (const [k, l] of Object.entries(luces)) {
@@ -273,7 +346,7 @@ function actualizarEscena(e, { luces, plano, angulo, pose, fondo }) {
     s.penumbra = 0.25 + l.suave * 0.75;
     s.shadow.radius = 1 + l.suave * 5;
     s.shadow.blurSamples = 12;
-    s.color.set(TONOS[l.tono].hex);
+    s.color.set(hexTono(l.tono));
     s.target.updateMatrixWorld();
   }
   renderer.render(scene, camara);
@@ -386,6 +459,28 @@ const Chip = ({ activo, onClick, children, title }) => (
     {children}
   </button>
 );
+
+// Fila de muestras de color, con selector libre opcional
+const Muestras = ({ lista, grupo, valor, onElegir, libre, grande }) => {
+  const tam = grande ? 'w-9 h-9' : 'w-8 h-8';
+  const personal = !lista[valor];
+  return (
+    <div className="flex flex-wrap gap-2 items-center">
+      {Object.entries(lista).filter(([, c]) => !grupo || c.grupo === grupo).map(([id, c]) => (
+        <button key={id} type="button" title={c.nombre} aria-label={c.nombre} aria-pressed={valor === id} onClick={() => onElegir(id)}
+          className={`${tam} rounded-full border-2 transition-transform ${valor === id ? 'border-white scale-110 ring-2 ring-[#00E5FF]' : 'border-[#8D93AB]/40 hover:scale-105'}`}
+          style={{ background: c.hex }} />
+      ))}
+      {libre && (
+        <label title="Elegir cualquier color" className={`${tam} relative rounded-full border-2 cursor-pointer overflow-hidden ${personal ? 'border-white ring-2 ring-[#00E5FF]' : 'border-[#8D93AB]/40'}`}
+          style={{ background: personal ? valor : 'conic-gradient(#ff2d2d, #ffe94d, #38e86b, #00e5ff, #3d7bff, #ff2dd1, #ff2d2d)' }}>
+          <span className="sr-only">Elegir cualquier color</span>
+          <input type="color" value={personal ? valor : '#00E5FF'} onChange={(e) => onElegir(e.target.value)} className="absolute inset-0 opacity-0 cursor-pointer" />
+        </label>
+      )}
+    </div>
+  );
+};
 
 const Deslizador = ({ etiqueta, valor, min, max, paso, onChange, formato }) => (
   <label className="block">
@@ -570,25 +665,17 @@ export default function TuEstudio() {
                 </>
               )}
               <div>
-                <p className="text-xs text-[#8D93AB] mb-2">Color de la luz</p>
-                <div className="flex flex-wrap gap-2">
-                  {Object.entries(TONOS).map(([id, t]) => (
-                    <Chip key={id} activo={l.tono === id} onClick={() => cambiarLuz(seleccion, { tono: id })}>
-                      <span className="inline-block w-2.5 h-2.5 rounded-full mr-1.5 align-middle" style={{ background: t.hex }} />{t.nombre}
-                    </Chip>
-                  ))}
-                </div>
+                <p className="text-xs text-[#8D93AB] mb-2">Color de la luz: <span className="text-white font-semibold">{nombreColor(TONOS, l.tono)}</span></p>
+                <p className="text-[11px] uppercase tracking-wider text-[#8D93AB]/80 mb-1.5">Temperatura de color</p>
+                <Muestras lista={TONOS} grupo="temp" valor={l.tono} onElegir={(c) => cambiarLuz(seleccion, { tono: c })} />
+                <p className="text-[11px] uppercase tracking-wider text-[#8D93AB]/80 mt-3 mb-1.5">Geles de color</p>
+                <Muestras lista={TONOS} grupo="gel" valor={l.tono} onElegir={(c) => cambiarLuz(seleccion, { tono: c })} libre />
               </div>
             </div>
 
             <div className="mt-4">
-              <p className="text-xs text-[#8D93AB] mb-2">Color del fondo</p>
-              <div className="flex gap-2">
-                {Object.entries(FONDOS).map(([id, hex]) => (
-                  <button key={id} type="button" onClick={() => { setFondo(id); setEsquema('personalizado'); }} aria-label={`Fondo ${id}`}
-                    className={`w-10 h-10 rounded-full border-2 ${fondo === id ? 'border-[#00E5FF]' : 'border-[#8D93AB]/40'}`} style={{ background: hex }} />
-                ))}
-              </div>
+              <p className="text-xs text-[#8D93AB] mb-2">Color del fondo: <span className="text-white font-semibold">{nombreColor(FONDOS, fondo)}</span></p>
+              <Muestras lista={FONDOS} valor={fondo} onElegir={(c) => { setFondo(c); setEsquema('personalizado'); }} libre grande />
             </div>
           </div>
         </div>
