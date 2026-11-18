@@ -3,7 +3,7 @@ import { Camera, Aperture, Send, MapPin, Phone, Mail, Users } from 'lucide-react
 
 // El simulador 3D se descarga solo cuando se abre su pestaña (la web inicial sigue siendo ligera)
 const TuEstudio = lazy(() => import('./TuEstudio.jsx'));
-const Funko3D = lazy(() => import('./Funko3D.jsx'));
+const FunkoPagina = lazy(() => import('./FunkoPagina.jsx'));
 import { AGENDA_INICIAL, AgendaPapel, ProcesoDigital, SalasAntes, EjemploReal } from './Transformacion.jsx';
 
 export default function FotartoWeb() {
@@ -46,6 +46,7 @@ export default function FotartoWeb() {
     'A dónde vamos',
     'Nuestro Estudio',
     'Tu estudio',
+    'Tu Funko 3D',
     'Tarifas',
     'Contacto'
   ];
@@ -137,7 +138,7 @@ export default function FotartoWeb() {
           </div>
           
           {/* Tabs */}
-          <nav className="no-scrollbar flex md:flex-wrap md:justify-center gap-2 md:gap-4 w-full md:w-auto overflow-x-auto md:overflow-visible px-1 py-1">
+          <nav className="no-scrollbar flex lg:justify-center gap-2 lg:gap-1.5 xl:gap-3 w-full lg:w-auto overflow-x-auto lg:overflow-visible px-1 py-1">
             {tabs.map((tab) => (
               <button
                 key={tab}
@@ -146,7 +147,7 @@ export default function FotartoWeb() {
                   e.currentTarget.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
                   window.scrollTo({ top: 0, behavior: 'smooth' });
                 }}
-                className={`shrink-0 whitespace-nowrap px-3 py-1.5 md:px-4 md:py-2 text-sm md:text-base font-semibold transition-all duration-300 rounded-full border 
+                className={`shrink-0 whitespace-nowrap px-3 py-1.5 md:py-2 xl:px-4 text-sm xl:text-base font-semibold transition-all duration-300 rounded-full border 
                   ${activeTab === tab 
                     ? 'border-[#00E5FF] bg-[#00E5FF]/10 text-[#00E5FF] glow-box' 
                     : 'border-transparent text-[#8D93AB] hover:text-white hover:border-[#8D93AB]/50'
@@ -165,6 +166,25 @@ export default function FotartoWeb() {
         {/* --- SECCIÓN: FOTARTO --- */}
         {activeTab === 'Fotarto' && (
           <section className="animate-in fade-in slide-in-from-bottom-4 duration-700">
+            {/* Banner de novedad: lleva a la pestaña del Funko */}
+            <button type="button" onClick={() => irA('Tu Funko 3D')} aria-label="Novedad: ahora tu Funko personalizado por solo 49,99 €. Ver Tu Funko 3D"
+              className="group relative w-full mb-12 overflow-hidden rounded-2xl border-2 border-[#00E5FF] glow-box text-left transition-transform hover:-translate-y-0.5"
+              style={{ background: 'linear-gradient(110deg, #00E5FF 0%, #00A5BD 38%, #0E2A33 70%, #0B0C10 100%)' }}>
+              <div className="absolute -right-10 -top-16 w-72 h-72 rounded-full bg-[#00E5FF]/20 blur-2xl pointer-events-none" />
+              <div className="relative flex items-center gap-4 sm:gap-8 p-5 sm:p-7 pr-2">
+                <div className="flex-1 min-w-0">
+                  <span className="inline-block px-3 py-1 mb-3 rounded-full bg-[#0B0C10] text-[#00E5FF] text-xs sm:text-sm font-extrabold tracking-[0.2em] animate-pulse">¡NOVEDAD!</span>
+                  <p className="font-playfair font-bold text-[#0B0C10] text-2xl sm:text-4xl leading-tight uppercase">
+                    Ahora tu Funko personalizado<br className="hidden sm:block" /> por solo <span className="whitespace-nowrap text-white [text-shadow:0_2px_12px_rgba(0,0,0,0.45)]">49,99 €</span>
+                  </p>
+                  <span className="mt-4 inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#0B0C10] text-white text-sm font-bold group-hover:bg-white group-hover:text-[#0B0C10] transition-colors">
+                    Descúbrelo <span aria-hidden="true">→</span>
+                  </span>
+                </div>
+                <img src="assets/img/funko-ejemplo.png" alt="" className="w-24 sm:w-32 md:w-36 shrink-0 drop-shadow-[0_10px_25px_rgba(0,0,0,0.6)] transition-transform duration-500 group-hover:scale-105 group-hover:-rotate-3" />
+              </div>
+            </button>
+
             <h2 className="text-4xl md:text-5xl font-playfair font-bold text-[#00E5FF] mb-4">¿Qué es Fotarto?</h2>
             <div className="border-l-4 border-[#00E5FF] pl-6 py-2 mb-8 bg-gradient-to-r from-[#00E5FF]/10 to-transparent">
               <p className="text-xl md:text-2xl font-playfair italic text-white">
@@ -180,32 +200,6 @@ export default function FotartoWeb() {
               </p>
             </div>
  
-            {/* Tu Funko en 3D: ejemplo con el uniforme de Fotarto */}
-            <div className="mt-14 grid md:grid-cols-2 gap-10 items-center">
-              <div className="order-2 md:order-1">
-                <p className="text-xs uppercase tracking-[0.3em] text-[#8D93AB] mb-2">Nuestro servicio estrella</p>
-                <h3 className="text-3xl md:text-4xl font-playfair font-bold text-white mb-4">Tu Funko en 3D</h3>
-                <p className="text-lg text-[#8D93AB] leading-relaxed mb-5">
-                  Te escaneamos en la Sala Multiusos, modelamos tu figura en 3D y la imprimimos en resina premium. Puedes elegir la ropa, el peinado y un objeto en las manos. Este es nuestro Funko de ejemplo, con el <strong className="text-white">uniforme de Fotarto</strong> y su cámara.
-                </p>
-                <ul className="space-y-2 text-[#8D93AB] mb-6">
-                  <li className="flex gap-2"><span className="text-[#00E5FF]">●</span> Escaneo 3D en el estudio (unos 10 minutos)</li>
-                  <li className="flex gap-2"><span className="text-[#00E5FF]">●</span> Modelado y pintado a mano</li>
-                  <li className="flex gap-2"><span className="text-[#00E5FF]">●</span> Te avisamos por WhatsApp cuando está listo</li>
-                </ul>
-                <div className="flex flex-wrap items-center gap-4">
-                  <span className="text-3xl font-bold text-[#00E5FF]">49,99 €</span>
-                  <span className="text-sm text-[#8D93AB]">Oferta de lanzamiento</span>
-                  <button type="button" onClick={() => irA('Contacto')} className="px-5 py-2.5 rounded-full bg-[#00E5FF] text-[#0B0C10] font-bold hover:bg-white transition-colors">Quiero el mío</button>
-                </div>
-              </div>
-              <div className="order-1 md:order-2 max-w-md w-full mx-auto">
-                <Suspense fallback={<div className="aspect-[4/5] rounded-2xl border-2 border-[#00E5FF]/40 flex items-center justify-center text-[#8D93AB] text-sm tracking-widest uppercase">Preparando el Funko…</div>}>
-                  <Funko3D />
-                </Suspense>
-              </div>
-            </div>
-
             <div className="mt-14">
               <img 
                 src="assets/img/logo-fotarto.jpg" 
@@ -325,6 +319,13 @@ export default function FotartoWeb() {
         {activeTab === 'Tu estudio' && (
           <Suspense fallback={<p className="text-center text-[#8D93AB] py-24 tracking-widest uppercase">Preparando el estudio…</p>}>
             <TuEstudio />
+          </Suspense>
+        )}
+
+        {/* --- SECCIÓN: TU FUNKO 3D --- */}
+        {activeTab === 'Tu Funko 3D' && (
+          <Suspense fallback={<p className="text-center text-[#8D93AB] py-24 tracking-widest uppercase">Preparando tu Funko…</p>}>
+            <FunkoPagina onPedir={() => irA('Contacto')} />
           </Suspense>
         )}
 

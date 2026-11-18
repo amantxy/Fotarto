@@ -31,8 +31,18 @@ function tramo(a, b, r, material) {
   return m;
 }
 
+// Opciones de personalización
+export const OPCIONES_FUNKO = {
+  piel: { claro: { nombre: 'Clara', hex: '#F6D5BD' }, medio: { nombre: 'Media', hex: '#F2C6A2' }, tostado: { nombre: 'Tostada', hex: '#D49A72' }, oscuro: { nombre: 'Oscura', hex: '#8D5A3B' } },
+  pelo: { castano: { nombre: 'Castaño', hex: '#3B2618' }, negro: { nombre: 'Negro', hex: '#151212' }, rubio: { nombre: 'Rubio', hex: '#D8B160' }, pelirrojo: { nombre: 'Pelirrojo', hex: '#A8431E' }, gris: { nombre: 'Canoso', hex: '#A3A3A6' }, turquesa: { nombre: 'Turquesa Fotarto', hex: '#00C8E0' } },
+  peinado: { corto: 'Corto', largo: 'Melena', coleta: 'Coleta' },
+  objeto: { camara: 'Cámara de fotos', nada: 'Sin objeto' },
+};
+export const FUNKO_INICIAL = { piel: 'medio', pelo: 'castano', peinado: 'corto', objeto: 'camara' };
+
 function crearFunko() {
   const g = new THREE.Group();
+  const partes = {};
   const piel = mat(0xf2c6a2, 0.6);
   const pelo = mat(0x3b2618, 0.7);
   const polo = mat(0x141519, 0.85);
@@ -104,6 +114,7 @@ function crearFunko() {
   cristal.position.z = 0.136; cam.add(cristal);
   const flash = bola(0.012, mat(0xffffff, 0.2, { emissive: 0x666666 })); flash.position.set(0.09, 0.05, 0.056); cam.add(flash);
   g.add(cam);
+  partes.camara = cam;
 
   // cabeza estilo Funko
   const cabeza = new THREE.Group();
@@ -125,11 +136,38 @@ function crearFunko() {
   const nuca = caja(1.03, 0.62, 0.36, 0.15, pelo); nuca.position.set(0, 0.06, -0.28); cabeza.add(nuca);
   const fleq = caja(0.98, 0.16, 0.22, 0.07, pelo); fleq.position.set(-0.04, 0.24, 0.34); fleq.rotation.z = 0.05; cabeza.add(fleq);
   const mechon = caja(0.36, 0.2, 0.2, 0.08, pelo); mechon.position.set(0.3, 0.2, 0.36); mechon.rotation.z = -0.35; cabeza.add(mechon);
+  partes.mechon = mechon;
+  // melena: mechones laterales y trasero hasta los hombros
+  const melena = new THREE.Group();
+  for (const s of [-1, 1]) { const lado = caja(0.16, 0.86, 0.66, 0.07, pelo); lado.position.set(s * 0.5, -0.12, -0.06); melena.add(lado); }
+  const espalda = caja(1.06, 0.95, 0.24, 0.1, pelo); espalda.position.set(0, -0.12, -0.36); melena.add(espalda);
+  cabeza.add(melena);
+  partes.melena = melena;
+  // coleta: lazo turquesa y pelo recogido
+  const coleta = new THREE.Group();
+  const lazo = new THREE.Mesh(new THREE.TorusGeometry(0.07, 0.025, 10, 28), turquesa); lazo.position.set(0, 0.22, -0.48); coleta.add(lazo);
+  const cola = bola(0.15, pelo, 0.9, 1.6, 0.9); cola.position.set(0, -0.02, -0.55); coleta.add(cola);
+  cabeza.add(coleta);
+  partes.coleta = coleta;
+  partes.piel = piel; partes.pelo = pelo; partes.nariz = nariz;
 
+  g.userData.partes = partes;
   return g;
 }
 
-export default function Funko3D() {
+function aplicarOpciones(funko, o) {
+  const p = funko.userData.partes;
+  const tono = new THREE.Color(OPCIONES_FUNKO.piel[o.piel].hex);
+  p.piel.color.copy(tono);
+  p.nariz.material.color.copy(tono).multiplyScalar(0.92);
+  p.pelo.color.set(OPCIONES_FUNKO.pelo[o.pelo].hex);
+  p.melena.visible = o.peinado === 'largo';
+  p.coleta.visible = o.peinado === 'coleta';
+  p.camara.visible = o.objeto === 'camara';
+}
+
+export default function Funko3D({ opciones = FUNKO_INICIAL, etiqueta = 'Ejemplo · Tu Funko en 3D' }) {
+  const funkoRef = useRef(null);
   const ref = useRef(null);
   const [error, setError] = useState(false);
 
@@ -163,6 +201,8 @@ export default function Funko3D() {
     relleno.position.set(-3, 1, 2); scene.add(relleno);
 
     const funko = crearFunko();
+    funkoRef.current = funko;
+    aplicarOpciones(funko, opciones);
     scene.add(funko);
 
     // girar: solo, o arrastrando con el dedo / ratón
@@ -209,11 +249,13 @@ export default function Funko3D() {
     };
   }, []);
 
+  useEffect(() => { if (funkoRef.current) aplicarOpciones(funkoRef.current, opciones); }, [opciones]);
+
   return (
     <div className="relative rounded-2xl overflow-hidden border-2 border-[#00E5FF] glow-box" style={{ background: 'radial-gradient(circle at 50% 40%, #16323a 0%, #0B0C10 70%)' }}>
       <canvas ref={ref} className="block w-full aspect-[4/5] cursor-grab active:cursor-grabbing touch-pan-y" aria-label="Funko de ejemplo con el uniforme de Fotarto: polo negro con ribetes turquesa, logotipo y una cámara en las manos" />
       {error && <p className="absolute inset-0 flex items-center justify-center text-[#8D93AB] text-sm p-6 text-center">Tu navegador no admite gráficos 3D (WebGL).</p>}
-      <span className="absolute top-3 left-3 px-2 py-1 rounded bg-black/60 text-xs font-bold text-[#00E5FF]">Ejemplo · Tu Funko en 3D</span>
+      <span className="absolute top-3 left-3 px-2 py-1 rounded bg-black/60 text-xs font-bold text-[#00E5FF]">{etiqueta}</span>
       <span className="absolute bottom-3 left-1/2 -translate-x-1/2 px-3 py-1 rounded-full bg-black/60 text-xs text-[#C9CDD8] flex items-center gap-1.5"><Hand className="w-3.5 h-3.5" /> Arrastra para girarlo</span>
     </div>
   );
