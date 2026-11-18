@@ -1,8 +1,9 @@
 import React, { useState, useEffect, useRef, Suspense, lazy } from 'react';
-import { Camera, Aperture, ChevronRight, Send, MapPin, Phone, Mail, Users } from 'lucide-react';
+import { Camera, Aperture, Send, MapPin, Phone, Mail, Users } from 'lucide-react';
 
 // El simulador 3D se descarga solo cuando se abre su pestaña (la web inicial sigue siendo ligera)
 const TuEstudio = lazy(() => import('./TuEstudio.jsx'));
+import { AGENDA_INICIAL, AgendaPapel, ProcesoDigital, SalasAntes } from './Transformacion.jsx';
 
 export default function FotartoWeb() {
   const [activeTab, setActiveTab] = useState('Fotarto');
@@ -15,6 +16,19 @@ export default function FotartoWeb() {
     ro.observe(h);
     return () => ro.disconnect();
   }, []);
+
+  // Agenda de papel compartida entre «De dónde venimos» y «A dónde vamos» (se guarda en el navegador)
+  const [agenda, setAgendaBase] = useState(() => {
+    try { const g = JSON.parse(localStorage.getItem('fotarto-agenda')); if (g && Array.isArray(g.reservas)) return g; } catch (e) { /* sin almacenamiento */ }
+    return AGENDA_INICIAL;
+  });
+  const setAgenda = (f) => setAgendaBase((a) => {
+    const n = typeof f === 'function' ? f(a) : f;
+    try { localStorage.setItem('fotarto-agenda', JSON.stringify(n)); } catch (e) { /* sin almacenamiento */ }
+    return n;
+  });
+  const [ejecucion, setEjecucion] = useState(0);
+  const irA = (tab) => { setActiveTab(tab); window.scrollTo({ top: 0, behavior: 'smooth' }); };
 
   // Portada de entrada: 'visible' -> 'saliendo' (animación) -> 'oculta'
   const [intro, setIntro] = useState('visible');
@@ -176,33 +190,25 @@ export default function FotartoWeb() {
 
         {/* --- SECCIÓN: DE DONDE VENIMOS --- */}
         {activeTab === 'De dónde venimos' && (
-          <section className="animate-in fade-in slide-in-from-bottom-4 duration-700">
-            <h2 className="text-4xl md:text-5xl font-playfair font-bold text-[#00E5FF] mb-8">Nuestros Orígenes</h2>
-            <div className="grid md:grid-cols-2 gap-12 items-center">
-              <div className="text-lg text-[#8D93AB] space-y-6 leading-relaxed">
+          <section className="animate-in fade-in slide-in-from-bottom-4 duration-700 space-y-14">
+            <div>
+              <h2 className="text-4xl md:text-5xl font-playfair font-bold text-[#00E5FF] mb-6">Nuestros Orígenes</h2>
+              <div className="text-lg text-[#8D93AB] space-y-4 leading-relaxed max-w-4xl">
                 <p>
-                  Toda gran transformación tiene un punto de partida. En nuestra <strong>"Empresa 0.0"</strong>, Fotarto era un estudio tradicional y lleno de talento, pero lastrado por procesos analógicos que frenaban nuestro potencial.
+                  Toda gran transformación tiene un punto de partida. En nuestra <strong className="text-white">«Empresa 0.0»</strong>, Fotarto era un estudio tradicional y lleno de talento, pero lastrado por procesos analógicos que frenaban nuestro potencial.
                 </p>
-                <p>
-                  Disponíamos de tres fantásticas salas físicas:
-                  <ul className="mt-4 space-y-2 ml-4">
-                    <li className="flex items-center gap-2"><ChevronRight className="text-[#00E5FF] w-5 h-5"/> <strong>Sala Multiusos</strong></li>
-                    <li className="flex items-center gap-2"><ChevronRight className="text-[#00E5FF] w-5 h-5"/> <strong>Sala Cine de Acción</strong></li>
-                    <li className="flex items-center gap-2"><ChevronRight className="text-[#00E5FF] w-5 h-5"/> <strong>Sala Eventos BBC</strong> (Bodas, Bautizos y Comuniones)</li>
-                  </ul>
-                </p>
-                <p>
-                  Sin embargo, nuestro día a día era un caos de <strong>agendas de papel</strong>, lo que provocaba solapamientos de reservas, material fotográfico perdido, y un control de stock (resina y papel) que se hacía "a ojo". Sabíamos que necesitábamos evolucionar.
-                </p>
+                <p>Disponíamos de tres fantásticas salas físicas. Así funcionaban antes:</p>
               </div>
-              <div className="relative">
-                <div className="absolute inset-0 bg-gradient-to-tr from-[#0B0C10] to-transparent z-10"></div>
-                <img 
-                  src="https://images.unsplash.com/photo-1551016834-019688725838?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" 
-                  alt="Agenda de papel antigua" 
-                  className="rounded-lg grayscale opacity-70 border border-[#8D93AB]/50"
-                />
-              </div>
+            </div>
+
+            <SalasAntes />
+
+            <div>
+              <h3 className="text-3xl font-playfair font-bold text-white mb-3">La agenda de papel</h3>
+              <p className="text-lg text-[#8D93AB] mb-8 max-w-4xl leading-relaxed">
+                Nuestro día a día era un caos de <strong className="text-white">agendas de papel</strong>, lo que provocaba solapamientos de reservas, material fotográfico perdido y un control de stock (resina y papel) que se hacía «a ojo». Esta era una semana cualquiera. <strong className="text-[#00E5FF]">Pruébala:</strong> apunta, cambia o borra reservas como lo hacíamos entonces.
+              </p>
+              <AgendaPapel agenda={agenda} setAgenda={setAgenda} onDigitalizar={() => { setEjecucion((n) => n + 1); irA('A dónde vamos'); }} />
             </div>
           </section>
         )}
@@ -239,6 +245,10 @@ export default function FotartoWeb() {
                   Cuando tu Funko o tus fotos están listas, el sistema te envía automáticamente un WhatsApp. Adiós a las llamadas telefónicas no contestadas.
                 </p>
               </div>
+            </div>
+
+            <div className="mt-16">
+              <ProcesoDigital agenda={agenda} ejecucion={ejecucion} onVolver={() => irA('De dónde venimos')} />
             </div>
           </section>
         )}
