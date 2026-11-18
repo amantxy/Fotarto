@@ -286,7 +286,7 @@ export default function FotartoWeb() {
           <section className="animate-in fade-in slide-in-from-bottom-4 duration-700">
             <h2 className="text-4xl md:text-5xl font-playfair font-bold text-[#00E5FF] mb-4">Nuestro Estudio</h2>
             <p className="text-lg text-[#8D93AB] mb-8 max-w-4xl">
-              Así es Fotarto por dentro: tres salas especializadas, una recepción con taller 3D y una zona de edición y poscopia, todo en un mismo espacio.
+              Así es Fotarto por dentro: tres salas especializadas, una recepción, una zona de edición y poscopia y, fuera de la vista del público, un taller privado de impresión 3D. Toca cada zona para verla por dentro.
             </p>
 
             <a href="assets/img/plano-estudio.jpg" target="_blank" rel="noopener noreferrer" className="block">

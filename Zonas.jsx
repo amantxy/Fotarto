@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
-import { X, ChevronRight, CheckCircle2, Euro, Users } from 'lucide-react';
+import { X, ChevronRight, CheckCircle2, Euro, Users, Lock } from 'lucide-react';
+import TallerResina from './TallerResina.jsx';
 
 // ---------------------------------------------------------------------------
 // Zonas del estudio: cada una es un botón con su imagen y abre su ficha
@@ -31,11 +32,11 @@ const ZONAS = [
     precio: '45 € / hora', aforo: 'Hasta 10 personas',
   },
   {
-    id: 'recepcion', t: 'Recepción y Taller 3D', img: 'assets/img/sala-recepcion.jpg',
-    d: 'Atención al cliente, vitrinas e impresoras de resina donde nacen los Funkos 3D.',
-    largo: 'La entrada al estudio. Aquí te atendemos, gestionamos las reservas en la nube y, a la vista de todos, las impresoras de resina dan forma a los Funkos 3D que luego se exponen en las vitrinas.',
-    equipo: ['Mostrador con tabletas para reservas', 'Impresoras 3D de resina', 'Vitrinas iluminadas con Funkos', 'Estación de pintado a mano'],
-    para: ['Atención y reservas', 'Recogida de encargos', 'Impresión de Funkos 3D'],
+    id: 'recepcion', t: 'Recepción y exposición', img: 'assets/img/sala-recepcion.jpg',
+    d: 'Atención al cliente y vitrinas donde se exponen los Funkos 3D terminados.',
+    largo: 'La entrada al estudio. Aquí te atendemos, gestionamos las reservas en la nube y exponemos en las vitrinas los Funkos 3D ya terminados. Las figuras se imprimen en el taller privado, fuera de la vista del público.',
+    equipo: ['Mostrador con tabletas para reservas', 'Vitrinas iluminadas con Funkos terminados', 'Pantalla con el estado de los encargos (Kanban)', 'Mesa de pintado a mano de las figuras'],
+    para: ['Atención y reservas', 'Recogida de encargos', 'Exposición de Funkos 3D'],
     precio: 'Funko 3D: 49,99 €', aforo: 'Zona de paso',
   },
   {
@@ -45,6 +46,21 @@ const ZONAS = [
     equipo: ['3 puestos de edición con monitores calibrados', 'Tableta gráfica para retoque', 'Impresora fotográfica de gran formato', 'Escáner e impresora multifunción', 'Servidor con copias de seguridad'],
     para: ['Retoque de sesiones', 'Restauración de fotos antiguas', 'Impresión de copias y álbumes'],
     precio: 'Según encargo', aforo: 'Uso interno',
+  },
+  {
+    id: 'taller3d', t: 'Taller de impresión 3D', privado: true, Ilustracion: TallerResina,
+    d: 'Almacén ventilado y cerrado al público con 5 impresoras de resina Elegoo Saturn 4 Ultra 16K.',
+    largo: 'La resina líquida desprende vapores y es tóxica antes de curarse, así que las impresoras están en un almacén aparte, cerrado al público y con extracción de aire continua hacia el exterior. Aquí se imprimen los Funkos y las figuras realistas, se lavan, se curan con luz UV y pasan a pintura.',
+    equipo: [
+      '5 × Elegoo Saturn 4 Ultra 16K: pantalla 16K de 10" y resolución XY de 14 × 19 µm',
+      'Cuba calefactada a 30 °C y cámara con IA que detecta fallos de impresión',
+      'Extractor de aire con salida al exterior y renovación continua',
+      'Estación de lavado y curado UV',
+      'Armario de resinas protegido de la luz',
+      'Equipo de protección: guantes de nitrilo, gafas y mascarilla con filtro',
+    ],
+    para: ['Funkos 3D', 'Figuras realistas', 'Piezas de atrezo'],
+    precio: 'Zona privada', aforo: 'Solo personal autorizado',
   },
 ];
 
@@ -64,7 +80,8 @@ function Ficha({ z, onCerrar, onReservar }) {
     <div className="font-montserrat fixed inset-0 z-[90] flex items-end sm:items-center justify-center bg-black/75 backdrop-blur-sm p-0 sm:p-6 animate-in" onClick={onCerrar} role="dialog" aria-modal="true" aria-label={z.t}>
       <div className="relative w-full max-w-4xl max-h-[92vh] overflow-y-auto rounded-t-2xl sm:rounded-2xl bg-[#0E1016] border-2 border-[#00E5FF] glow-box" onClick={(e) => e.stopPropagation()}>
         <button ref={cerrarRef} type="button" onClick={onCerrar} aria-label="Cerrar" className="absolute top-3 right-3 z-10 p-2 rounded-full bg-black/70 text-white hover:bg-[#00E5FF] hover:text-[#0B0C10]"><X className="w-5 h-5" /></button>
-        <img src={z.img} alt={`${z.t} por dentro`} className="w-full max-h-[50vh] object-cover" />
+        {z.Ilustracion ? <z.Ilustracion className="w-full max-h-[50vh] block" /> : <img src={z.img} alt={`${z.t} por dentro`} className="w-full max-h-[50vh] object-cover" />}
+        {z.privado && <p className="flex items-center gap-2 px-6 md:px-8 pt-5 text-sm font-semibold text-[#FFD166]"><Lock className="w-4 h-4" /> Zona sin acceso al público por seguridad: la resina sin curar es tóxica y desprende olor.</p>}
         <div className="p-6 md:p-8 grid md:grid-cols-[minmax(0,1.2fr)_minmax(0,1fr)] gap-8">
           <div>
             <h3 className="text-3xl font-playfair font-bold text-[#00E5FF] mb-3">{z.t}</h3>
@@ -103,7 +120,10 @@ export default function Zonas({ onReservar }) {
           <button key={zona.id} type="button" onClick={() => setAbierta(zona.id)} aria-label={`Ver ${zona.t} por dentro`}
             className="group text-left rounded-xl overflow-hidden border border-[#8D93AB]/30 bg-[#151720] hover:border-[#00E5FF] hover:-translate-y-1 transition-all duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#00E5FF]">
             <div className="relative h-44 overflow-hidden">
-              <img src={zona.img} alt="" loading="lazy" className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
+              {zona.Ilustracion
+                ? <zona.Ilustracion className="w-full h-full transition-transform duration-500 group-hover:scale-105" />
+                : <img src={zona.img} alt="" loading="lazy" className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />}
+              {zona.privado && <span className="absolute top-2 left-2 px-2 py-1 rounded bg-[#FFD166] text-[11px] font-bold text-[#0B0C10] flex items-center gap-1"><Lock className="w-3 h-3" /> Sin acceso al público</span>}
               <span className="absolute bottom-2 right-2 px-2 py-1 rounded bg-black/70 text-[11px] font-semibold text-[#00E5FF]">{zona.precio}</span>
             </div>
             <div className="p-5">
