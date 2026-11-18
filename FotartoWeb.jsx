@@ -3,6 +3,7 @@ import { Camera, Aperture, Send, MapPin, Phone, Mail, Users } from 'lucide-react
 
 // El simulador 3D se descarga solo cuando se abre su pestaña (la web inicial sigue siendo ligera)
 const TuEstudio = lazy(() => import('./TuEstudio.jsx'));
+const Funko3D = lazy(() => import('./Funko3D.jsx'));
 import { AGENDA_INICIAL, AgendaPapel, ProcesoDigital, SalasAntes, EjemploReal } from './Transformacion.jsx';
 
 export default function FotartoWeb() {
@@ -178,7 +179,34 @@ export default function FotartoWeb() {
                 Nuestras instalaciones albergan áreas especializadas en fotografía, meticulosos procesos de restauración digital y nuestro servicio estrella y exclusivo: <strong className="text-[#00E5FF]">"Tu Funko en 3D"</strong>, donde te transformamos en una figura de resina totalmente personalizada y lista para decorar tu estantería.
               </p>
             </div>
-            <div className="mt-12">
+ 
+            {/* Tu Funko en 3D: ejemplo con el uniforme de Fotarto */}
+            <div className="mt-14 grid md:grid-cols-2 gap-10 items-center">
+              <div className="order-2 md:order-1">
+                <p className="text-xs uppercase tracking-[0.3em] text-[#8D93AB] mb-2">Nuestro servicio estrella</p>
+                <h3 className="text-3xl md:text-4xl font-playfair font-bold text-white mb-4">Tu Funko en 3D</h3>
+                <p className="text-lg text-[#8D93AB] leading-relaxed mb-5">
+                  Te escaneamos en la Sala Multiusos, modelamos tu figura en 3D y la imprimimos en resina premium. Puedes elegir la ropa, el peinado y un objeto en las manos. Este es nuestro Funko de ejemplo, con el <strong className="text-white">uniforme de Fotarto</strong> y su cámara.
+                </p>
+                <ul className="space-y-2 text-[#8D93AB] mb-6">
+                  <li className="flex gap-2"><span className="text-[#00E5FF]">●</span> Escaneo 3D en el estudio (unos 10 minutos)</li>
+                  <li className="flex gap-2"><span className="text-[#00E5FF]">●</span> Modelado y pintado a mano</li>
+                  <li className="flex gap-2"><span className="text-[#00E5FF]">●</span> Te avisamos por WhatsApp cuando está listo</li>
+                </ul>
+                <div className="flex flex-wrap items-center gap-4">
+                  <span className="text-3xl font-bold text-[#00E5FF]">49,99 €</span>
+                  <span className="text-sm text-[#8D93AB]">Oferta de lanzamiento</span>
+                  <button type="button" onClick={() => irA('Contacto')} className="px-5 py-2.5 rounded-full bg-[#00E5FF] text-[#0B0C10] font-bold hover:bg-white transition-colors">Quiero el mío</button>
+                </div>
+              </div>
+              <div className="order-1 md:order-2 max-w-md w-full mx-auto">
+                <Suspense fallback={<div className="aspect-[4/5] rounded-2xl border-2 border-[#00E5FF]/40 flex items-center justify-center text-[#8D93AB] text-sm tracking-widest uppercase">Preparando el Funko…</div>}>
+                  <Funko3D />
+                </Suspense>
+              </div>
+            </div>
+
+            <div className="mt-14">
               <img 
                 src="assets/img/logo-fotarto.jpg" 
                 alt="Logotipo de Fotarto: cámara con diafragma turquesa y la letra f" 

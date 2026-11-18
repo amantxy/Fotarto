@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
+import { calcomania } from './logo3d.js';
 import { Camera, Lightbulb, Download, RotateCcw, Info } from 'lucide-react';
 
 // ---------------------------------------------------------------------------
@@ -188,6 +189,16 @@ function crearEscena(canvas) {
   torso.position.z = -0.05;
   sujeto.add(torso);
 
+  // Logotipo de Fotarto bordado: pecho (lado izquierdo de quien lo lleva) y espalda
+  const logoPecho = calcomania('pecho', 0.085);
+  logoPecho.position.set(0.075, -0.235, 0.042);
+  logoPecho.rotation.y = 0.3;
+  sujeto.add(logoPecho);
+  const logoEspalda = calcomania('espalda', 0.2);
+  logoEspalda.position.set(0, -0.29, -0.152);
+  logoEspalda.rotation.y = Math.PI;
+  sujeto.add(logoEspalda);
+
   // Costuras turquesa laterales del polo (como el uniforme real)
   for (const lado of [-1, 1]) {
     const costura = new THREE.Mesh(new THREE.CylinderGeometry(0.0035, 0.0035, 0.78, 8), ribete);
@@ -217,6 +228,11 @@ function crearEscena(canvas) {
     const puno = new THREE.Mesh(new THREE.TorusGeometry(0.0495, 0.0045, 8, 32), ribete);
     puno.rotation.x = Math.PI / 2; puno.position.y = -0.162;
     hombro.add(puno);
+    // «f» bordada en la manga
+    const logoManga = calcomania('manga', 0.038);
+    logoManga.position.set(lado * 0.0565, -0.075, 0);
+    logoManga.rotation.y = lado * Math.PI / 2;
+    hombro.add(logoManga);
     // brazo hasta el codo
     hombro.add(torneada([[0.0, -0.13], [0.045, -0.13], [0.042, -0.21], [0.036, -0.28], [0.03, -0.3], [0.0, -0.305]], pielLisa));
     const codo = new THREE.Group();
