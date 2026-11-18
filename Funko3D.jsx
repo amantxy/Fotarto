@@ -31,95 +31,154 @@ function tramo(a, b, r, material) {
   return m;
 }
 
-// Opciones de personalización
+// Opciones de personalización (los colores pueden ser de la lista o uno libre en #rrggbb)
 export const OPCIONES_FUNKO = {
-  piel: { claro: { nombre: 'Clara', hex: '#F6D5BD' }, medio: { nombre: 'Media', hex: '#F2C6A2' }, tostado: { nombre: 'Tostada', hex: '#D49A72' }, oscuro: { nombre: 'Oscura', hex: '#8D5A3B' } },
-  pelo: { castano: { nombre: 'Castaño', hex: '#3B2618' }, negro: { nombre: 'Negro', hex: '#151212' }, rubio: { nombre: 'Rubio', hex: '#D8B160' }, pelirrojo: { nombre: 'Pelirrojo', hex: '#A8431E' }, gris: { nombre: 'Canoso', hex: '#A3A3A6' }, turquesa: { nombre: 'Turquesa Fotarto', hex: '#00C8E0' } },
-  peinado: { corto: 'Corto', largo: 'Melena', coleta: 'Coleta' },
-  objeto: { camara: 'Cámara de fotos', nada: 'Sin objeto' },
+  piel: { claro: { nombre: 'Clara', hex: '#F6D5BD' }, medio: { nombre: 'Media', hex: '#F2C6A2' }, tostado: { nombre: 'Tostada', hex: '#D49A72' }, moreno: { nombre: 'Morena', hex: '#B07850' }, oscuro: { nombre: 'Oscura', hex: '#7A4B30' } },
+  pelo: { castano: { nombre: 'Castaño', hex: '#3B2618' }, negro: { nombre: 'Negro', hex: '#151212' }, rubio: { nombre: 'Rubio', hex: '#D8B160' }, pelirrojo: { nombre: 'Pelirrojo', hex: '#A8431E' }, gris: { nombre: 'Canoso', hex: '#A3A3A6' }, rosa: { nombre: 'Rosa', hex: '#F28AB8' }, turquesa: { nombre: 'Turquesa Fotarto', hex: '#00C8E0' } },
+  peinado: { corto: 'Corto', largo: 'Melena', coleta: 'Coleta', mono: 'Moño', afro: 'Rizos', rapado: 'Rapado', calvo: 'Calvo' },
+  barba: { nada: 'Sin barba', barba: 'Barba', bigote: 'Bigote', perilla: 'Perilla' },
+  gafas: { nada: 'Sin gafas', vista: 'Gafas', sol: 'Gafas de sol' },
+  gorro: { nada: 'Nada', gorra: 'Gorra Fotarto', auriculares: 'Auriculares' },
+  ropa: { uniforme: 'Uniforme Fotarto', camiseta: 'Camiseta', sudadera: 'Sudadera', elegante: 'Traje', vestido: 'Vestido' },
+  ropaColor: { blanco: { nombre: 'Blanco', hex: '#F2F2F2' }, negro: { nombre: 'Negro', hex: '#1B1C20' }, rojo: { nombre: 'Rojo', hex: '#C0392B' }, azul: { nombre: 'Azul', hex: '#2E5BBA' }, verde: { nombre: 'Verde', hex: '#2E8B57' }, rosa: { nombre: 'Rosa', hex: '#E85D9A' }, amarillo: { nombre: 'Amarillo', hex: '#F2C230' }, turquesa: { nombre: 'Turquesa', hex: '#00B8CC' } },
+  objeto: { camara: 'Cámara', ramo: 'Ramo de flores', movil: 'Móvil', nada: 'Nada' },
 };
-export const FUNKO_INICIAL = { piel: 'medio', pelo: 'castano', peinado: 'corto', objeto: 'camara' };
+export const COLOR_ROPA_DEFECTO = { uniforme: 'negro', camiseta: 'blanco', sudadera: 'rojo', elegante: 'rojo', vestido: 'rosa' };
+export const FUNKO_INICIAL = { piel: 'medio', pelo: 'castano', peinado: 'corto', barba: 'nada', gafas: 'nada', gorro: 'nada', ropa: 'uniforme', ropaColor: 'negro', objeto: 'camara', nombre: '' };
+export const colorDe = (lista, v) => (lista[v] ? lista[v].hex : v);
+
+// Texto con el nombre para la peana
+function texturaNombre() {
+  const c = document.createElement('canvas'); c.width = 1024; c.height = 96;
+  const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = 4;
+  t.userData.dibujar = (txt) => {
+    const ctx = c.getContext('2d');
+    ctx.clearRect(0, 0, c.width, c.height);
+    ctx.fillStyle = '#00E5FF';
+    ctx.font = '700 64px "Montserrat", Arial, sans-serif';
+    ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    ctx.fillText((txt || '').toUpperCase().slice(0, 18), c.width / 2, c.height / 2 + 4);
+    t.needsUpdate = true;
+  };
+  return t;
+}
 
 function crearFunko() {
   const g = new THREE.Group();
-  const partes = {};
+  const P = {};
   const piel = mat(0xf2c6a2, 0.6);
   const pelo = mat(0x3b2618, 0.7);
-  const polo = mat(0x141519, 0.85);
+  const tela = mat(0x141519, 0.85);
   const pantalon = mat(0x1d1e23, 0.8);
   const zapato = mat(0x0c0c0e, 0.4);
   const turquesa = mat(0x00c8e0, 0.45, { emissive: 0x003a42 });
   const negroBrillo = mat(0x050506, 0.15, { metalness: 0.2 });
+  const blanco = mat(0xf4f4f4, 0.6);
+  const acento = mat(0xc0392b, 0.5); // corbata del traje
+  Object.assign(P, { piel, pelo, tela, acento });
+  const grupo = (padre) => { const x = new THREE.Group(); padre.add(x); return x; };
 
-  // peana
+  // peana con aro turquesa y nombre
   const peana = new THREE.Mesh(new THREE.CylinderGeometry(0.62, 0.66, 0.1, 64), negroBrillo);
-  peana.position.y = 0.05; peana.receiveShadow = true;
-  g.add(peana);
+  peana.position.y = 0.05; peana.receiveShadow = true; g.add(peana);
   const aro = new THREE.Mesh(new THREE.TorusGeometry(0.64, 0.012, 8, 80), turquesa);
-  aro.rotation.x = Math.PI / 2; aro.position.y = 0.1;
-  g.add(aro);
+  aro.rotation.x = Math.PI / 2; aro.position.y = 0.1; g.add(aro);
+  const texNombre = texturaNombre();
+  const banda = new THREE.Mesh(new THREE.CylinderGeometry(0.665, 0.665, 0.07, 64, 1, true, -Math.PI / 2.4, Math.PI / 1.2),
+    new THREE.MeshStandardMaterial({ map: texNombre, transparent: true, depthWrite: false, roughness: 0.4, emissive: 0x00e5ff, emissiveMap: texNombre, emissiveIntensity: 0.4 }));
+  banda.position.y = 0.045; g.add(banda);
+  P.texNombre = texNombre;
 
-  // piernas y zapatos
+  // piernas, zapatos y falda del vestido
   for (const s of [-1, 1]) {
     const pierna = caja(0.19, 0.34, 0.22, 0.07, pantalon); pierna.position.set(s * 0.115, 0.33, 0); g.add(pierna);
     const zap = caja(0.2, 0.11, 0.3, 0.05, zapato); zap.position.set(s * 0.115, 0.155, 0.04); g.add(zap);
   }
+  P.falda = new THREE.Mesh(new THREE.CylinderGeometry(0.29, 0.36, 0.3, 40), tela);
+  P.falda.position.y = 0.36; P.falda.castShadow = true; g.add(P.falda);
 
-  // torso con el polo de Fotarto
-  const torso = caja(0.54, 0.5, 0.34, 0.1, polo); torso.position.y = 0.72; g.add(torso);
-  const bajo = caja(0.545, 0.03, 0.345, 0.015, turquesa); bajo.position.y = 0.48; g.add(bajo);
+  // torso
+  const torso = caja(0.54, 0.5, 0.34, 0.1, tela); torso.position.y = 0.72; g.add(torso);
+  const cuello = new THREE.Mesh(new THREE.TorusGeometry(0.11, 0.028, 12, 40), tela);
+  cuello.rotation.x = Math.PI / 2; cuello.scale.set(1, 0.8, 1); cuello.position.y = 0.97; g.add(cuello);
+
+  // detalles del uniforme de Fotarto: ribetes, botones y logotipos
+  P.uniforme = grupo(g);
+  const bajo = caja(0.545, 0.03, 0.345, 0.015, turquesa); bajo.position.y = 0.48; P.uniforme.add(bajo);
   for (const s of [-1, 1]) {
     const costura = new THREE.Mesh(new THREE.BoxGeometry(0.012, 0.42, 0.014), turquesa);
-    costura.position.set(s * 0.271, 0.71, 0); g.add(costura);
+    costura.position.set(s * 0.271, 0.71, 0); P.uniforme.add(costura);
   }
-  // cuello del polo con ribete y botones
-  const cuello = new THREE.Mesh(new THREE.TorusGeometry(0.11, 0.028, 12, 40), polo);
-  cuello.rotation.x = Math.PI / 2; cuello.scale.set(1, 0.8, 1); cuello.position.y = 0.97; g.add(cuello);
   const ribete = new THREE.Mesh(new THREE.TorusGeometry(0.115, 0.009, 8, 40), turquesa);
-  ribete.rotation.x = Math.PI / 2; ribete.scale.set(1, 0.8, 1); ribete.position.y = 0.99; g.add(ribete);
-  for (let i = 0; i < 2; i++) { const bt = bola(0.012, polo); bt.position.set(0, 0.9 - i * 0.05, 0.172); g.add(bt); }
-  // logotipos: pecho, espalda
-  const lp = calcomania('pecho', 0.15); lp.position.set(0.13, 0.84, 0.1715); g.add(lp);
-  const le = calcomania('espalda', 0.34); le.position.set(0, 0.76, -0.1715); le.rotation.y = Math.PI; g.add(le);
+  ribete.rotation.x = Math.PI / 2; ribete.scale.set(1, 0.8, 1); ribete.position.y = 0.99; P.uniforme.add(ribete);
+  for (let i = 0; i < 2; i++) { const bt = bola(0.012, tela); bt.position.set(0, 0.9 - i * 0.05, 0.172); P.uniforme.add(bt); }
+  const lp = calcomania('pecho', 0.15); lp.position.set(0.13, 0.84, 0.1715); P.uniforme.add(lp);
+  const le = calcomania('espalda', 0.34); le.position.set(0, 0.76, -0.1715); le.rotation.y = Math.PI; P.uniforme.add(le);
 
-  // brazos: manga del polo, puño turquesa, brazo y mano sujetando la cámara
+  // sudadera: capucha y bolsillo
+  P.sudadera = grupo(g);
+  const capucha = new THREE.Mesh(new THREE.TorusGeometry(0.16, 0.06, 14, 40), tela);
+  capucha.rotation.x = Math.PI / 2.6; capucha.position.set(0, 0.98, -0.07); P.sudadera.add(capucha);
+  const bolsillo = caja(0.3, 0.12, 0.02, 0.01, tela); bolsillo.position.set(0, 0.58, 0.171); P.sudadera.add(bolsillo);
+  for (const s of [-1, 1]) { const cordon = new THREE.Mesh(new THREE.CylinderGeometry(0.008, 0.008, 0.14, 8), blanco); cordon.position.set(s * 0.05, 0.89, 0.175); P.sudadera.add(cordon); }
+
+  // traje: camisa blanca, corbata y solapas
+  P.elegante = grupo(g);
+  const camisa = new THREE.Mesh(new THREE.CircleGeometry(0.13, 3), blanco);
+  camisa.position.set(0, 0.88, 0.172); camisa.rotation.z = -Math.PI / 2; camisa.scale.set(1, 0.8, 1); P.elegante.add(camisa);
+  const nudo = caja(0.045, 0.04, 0.02, 0.01, acento); nudo.position.set(0, 0.93, 0.18); P.elegante.add(nudo);
+  const corbata = caja(0.05, 0.22, 0.015, 0.012, acento); corbata.position.set(0, 0.8, 0.178); P.elegante.add(corbata);
+
+  // brazos
   const hombro = (s) => new THREE.Vector3(s * 0.29, 0.9, 0);
   const codo = (s) => new THREE.Vector3(s * 0.33, 0.68, 0.12);
   const mano = (s) => new THREE.Vector3(s * 0.15, 0.66, 0.3);
   for (const s of [-1, 1]) {
     const finManga = new THREE.Vector3().lerpVectors(hombro(s), codo(s), 0.62);
-    g.add(tramo(hombro(s), finManga, 0.085, polo));
+    g.add(tramo(hombro(s), finManga, 0.085, tela));
     const puno = new THREE.Mesh(new THREE.TorusGeometry(0.083, 0.012, 8, 28), turquesa);
     puno.position.copy(finManga);
     puno.quaternion.setFromUnitVectors(new THREE.Vector3(0, 0, 1), new THREE.Vector3().subVectors(codo(s), hombro(s)).normalize());
-    g.add(puno);
+    P.uniforme.add(puno);
     const fm = calcomania('manga', 0.07);
     const mid = new THREE.Vector3().lerpVectors(hombro(s), finManga, 0.45);
     fm.position.set(mid.x + s * 0.086, mid.y, mid.z); fm.rotation.y = s * Math.PI / 2; fm.rotation.z = s * -0.18;
-    g.add(fm);
+    P.uniforme.add(fm);
     g.add(tramo(finManga, codo(s), 0.06, piel));
     g.add(tramo(codo(s), mano(s), 0.058, piel));
     const m = bola(0.075, piel, 1, 1, 0.9); m.position.copy(mano(s)); g.add(m);
   }
 
-  // cámara de fotos entre las manos
-  const cam = new THREE.Group();
-  cam.position.set(0, 0.69, 0.33);
-  const cuerpo = caja(0.26, 0.16, 0.11, 0.025, negroBrillo); cam.add(cuerpo);
-  const visor = caja(0.09, 0.05, 0.08, 0.015, negroBrillo); visor.position.set(-0.02, 0.1, 0); cam.add(visor);
+  // objetos en las manos
+  P.camara = grupo(g);
+  P.camara.position.set(0, 0.69, 0.33);
+  P.camara.add(caja(0.26, 0.16, 0.11, 0.025, negroBrillo));
+  const visor = caja(0.09, 0.05, 0.08, 0.015, negroBrillo); visor.position.set(-0.02, 0.1, 0); P.camara.add(visor);
   const objetivo = new THREE.Mesh(new THREE.CylinderGeometry(0.06, 0.065, 0.09, 40), negroBrillo);
-  objetivo.rotation.x = Math.PI / 2; objetivo.position.z = 0.09; cam.add(objetivo);
-  const anillo = new THREE.Mesh(new THREE.TorusGeometry(0.058, 0.01, 8, 40), turquesa); anillo.position.z = 0.135; cam.add(anillo);
+  objetivo.rotation.x = Math.PI / 2; objetivo.position.z = 0.09; P.camara.add(objetivo);
+  const anillo = new THREE.Mesh(new THREE.TorusGeometry(0.058, 0.01, 8, 40), turquesa); anillo.position.z = 0.135; P.camara.add(anillo);
   const cristal = new THREE.Mesh(new THREE.CircleGeometry(0.05, 40), mat(0x0a3d4a, 0.05, { metalness: 0.6, emissive: 0x00303a }));
-  cristal.position.z = 0.136; cam.add(cristal);
-  const flash = bola(0.012, mat(0xffffff, 0.2, { emissive: 0x666666 })); flash.position.set(0.09, 0.05, 0.056); cam.add(flash);
-  g.add(cam);
-  partes.camara = cam;
+  cristal.position.z = 0.136; P.camara.add(cristal);
+  const flash = bola(0.012, mat(0xffffff, 0.2, { emissive: 0x666666 })); flash.position.set(0.09, 0.05, 0.056); P.camara.add(flash);
+
+  P.ramo = grupo(g);
+  P.ramo.position.set(0, 0.66, 0.33);
+  const papel = new THREE.Mesh(new THREE.ConeGeometry(0.1, 0.3, 24, 1, true), mat(0xfff4f8, 0.7, { side: THREE.DoubleSide }));
+  papel.rotation.x = Math.PI; papel.position.y = -0.02; P.ramo.add(papel);
+  const flores = [0xff5d8f, 0xffd166, 0xffffff, 0xff8fc4, 0xc77dff, 0xff5d8f, 0xffffff];
+  flores.forEach((c, i) => { const a = (i / flores.length) * Math.PI * 2; const f = bola(0.045, mat(c, 0.6)); f.position.set(Math.cos(a) * 0.07, 0.15 + (i % 2) * 0.03, Math.sin(a) * 0.05); P.ramo.add(f); });
+  const centro = bola(0.05, mat(0xff3d6e, 0.6)); centro.position.y = 0.19; P.ramo.add(centro);
+  for (let i = 0; i < 4; i++) { const h = bola(0.035, mat(0x3a9d4f, 0.7), 1.6, 0.5, 1); h.position.set((i - 1.5) * 0.06, 0.1, 0.06); h.rotation.z = (i - 1.5) * 0.4; P.ramo.add(h); }
+
+  P.movil = grupo(g);
+  P.movil.position.set(0, 0.7, 0.32); P.movil.rotation.x = -0.35;
+  P.movil.add(caja(0.12, 0.22, 0.02, 0.012, negroBrillo));
+  const pantalla = new THREE.Mesh(new THREE.PlaneGeometry(0.1, 0.19), mat(0x00e5ff, 0.2, { emissive: 0x00a5bd, emissiveIntensity: 0.8 }));
+  pantalla.position.z = 0.011; P.movil.add(pantalla);
 
   // cabeza estilo Funko
   const cabeza = new THREE.Group();
-  cabeza.position.y = 1.43;
-  g.add(cabeza);
+  cabeza.position.y = 1.43; g.add(cabeza);
   const cuelloPiel = new THREE.Mesh(new THREE.CylinderGeometry(0.09, 0.1, 0.12, 24), piel);
   cuelloPiel.position.y = 1.02; g.add(cuelloPiel);
   cabeza.add(caja(0.98, 0.84, 0.84, 0.24, piel));
@@ -130,40 +189,107 @@ function crearFunko() {
     const oreja = bola(0.07, piel, 0.6, 1, 0.9); oreja.position.set(s * 0.49, -0.04, 0); cabeza.add(oreja);
     const mejilla = bola(0.06, mat(0xf0a0a0, 0.7, { transparent: true, opacity: 0.35 }), 1, 0.6, 0.3); mejilla.position.set(s * 0.3, -0.16, 0.405); cabeza.add(mejilla);
   }
-  const nariz = bola(0.035, mat(0xe6b08c, 0.6), 1, 0.8, 0.7); nariz.position.set(0, -0.13, 0.42); cabeza.add(nariz);
-  // pelo: casquete, nuca y flequillo
-  const cas = caja(1.03, 0.34, 0.9, 0.16, pelo); cas.position.set(0, 0.3, -0.01); cabeza.add(cas);
-  const nuca = caja(1.03, 0.62, 0.36, 0.15, pelo); nuca.position.set(0, 0.06, -0.28); cabeza.add(nuca);
-  const fleq = caja(0.98, 0.16, 0.22, 0.07, pelo); fleq.position.set(-0.04, 0.24, 0.34); fleq.rotation.z = 0.05; cabeza.add(fleq);
-  const mechon = caja(0.36, 0.2, 0.2, 0.08, pelo); mechon.position.set(0.3, 0.2, 0.36); mechon.rotation.z = -0.35; cabeza.add(mechon);
-  partes.mechon = mechon;
-  // melena: mechones laterales y trasero hasta los hombros
-  const melena = new THREE.Group();
-  for (const s of [-1, 1]) { const lado = caja(0.16, 0.86, 0.66, 0.07, pelo); lado.position.set(s * 0.5, -0.12, -0.06); melena.add(lado); }
-  const espalda = caja(1.06, 0.95, 0.24, 0.1, pelo); espalda.position.set(0, -0.12, -0.36); melena.add(espalda);
-  cabeza.add(melena);
-  partes.melena = melena;
-  // coleta: lazo turquesa y pelo recogido
-  const coleta = new THREE.Group();
-  const lazo = new THREE.Mesh(new THREE.TorusGeometry(0.07, 0.025, 10, 28), turquesa); lazo.position.set(0, 0.22, -0.48); coleta.add(lazo);
-  const cola = bola(0.15, pelo, 0.9, 1.6, 0.9); cola.position.set(0, -0.02, -0.55); coleta.add(cola);
-  cabeza.add(coleta);
-  partes.coleta = coleta;
-  partes.piel = piel; partes.pelo = pelo; partes.nariz = nariz;
+  P.nariz = bola(0.035, mat(0xe6b08c, 0.6), 1, 0.8, 0.7); P.nariz.position.set(0, -0.13, 0.42); cabeza.add(P.nariz);
 
-  g.userData.partes = partes;
+  // peinados
+  const pz = (w, h, d, r, x, y, z, padre, rz = 0) => { const m = caja(w, h, d, r, pelo); m.position.set(x, y, z); m.rotation.z = rz; padre.add(m); return m; };
+  P.base = grupo(cabeza);
+  pz(1.03, 0.34, 0.9, 0.16, 0, 0.3, -0.01, P.base);
+  pz(1.03, 0.62, 0.36, 0.15, 0, 0.06, -0.28, P.base);
+  pz(0.98, 0.16, 0.22, 0.07, -0.04, 0.24, 0.34, P.base, 0.05);
+  P.mechon = pz(0.36, 0.2, 0.2, 0.08, 0.3, 0.2, 0.36, cabeza, -0.35);
+  P.melena = grupo(cabeza);
+  for (const s of [-1, 1]) pz(0.16, 0.86, 0.66, 0.07, s * 0.5, -0.12, -0.06, P.melena);
+  pz(1.06, 0.95, 0.24, 0.1, 0, -0.12, -0.36, P.melena);
+  P.coleta = grupo(cabeza);
+  const lazo = new THREE.Mesh(new THREE.TorusGeometry(0.07, 0.025, 10, 28), turquesa); lazo.position.set(0, 0.22, -0.48); P.coleta.add(lazo);
+  const cola = bola(0.15, pelo, 0.9, 1.6, 0.9); cola.position.set(0, -0.02, -0.55); P.coleta.add(cola);
+  P.mono = grupo(cabeza);
+  const mono = bola(0.2, pelo, 1, 0.85, 1); mono.position.set(0, 0.55, -0.12); P.mono.add(mono);
+  const lazoMono = new THREE.Mesh(new THREE.TorusGeometry(0.15, 0.022, 10, 32), turquesa); lazoMono.rotation.x = Math.PI / 2; lazoMono.position.set(0, 0.47, -0.12); P.mono.add(lazoMono);
+  P.afro = grupo(cabeza);
+  for (let i = 0; i < 46; i++) {
+    const a = i * 2.39996, y = 1 - (i / 45) * 1.15; const r = Math.sqrt(Math.max(0, 1 - y * y));
+    const px = Math.cos(a) * r, pzz = Math.sin(a) * r;
+    if (pzz > 0.55 && y < 0.55) continue; // deja la cara libre
+    const b = bola(0.17, pelo); b.position.set(px * 0.56, 0.12 + y * 0.42, pzz * 0.5 - 0.04); P.afro.add(b);
+  }
+  P.rapado = grupo(cabeza);
+  pz(1.0, 0.22, 0.87, 0.11, 0, 0.33, -0.01, P.rapado);
+  pz(1.0, 0.5, 0.12, 0.05, 0, 0.1, -0.385, P.rapado);
+
+  // barba, bigote y perilla
+  P.barba = grupo(cabeza);
+  const barba = caja(0.9, 0.3, 0.26, 0.12, pelo); barba.position.set(0, -0.3, 0.3); P.barba.add(barba);
+  for (const s of [-1, 1]) pz(0.12, 0.34, 0.3, 0.05, s * 0.44, -0.12, 0.2, P.barba);
+  P.bigote = grupo(cabeza);
+  for (const s of [-1, 1]) pz(0.16, 0.05, 0.05, 0.02, s * 0.075, -0.2, 0.43, P.bigote, s * -0.2);
+  P.perilla = grupo(cabeza);
+  pz(0.16, 0.14, 0.08, 0.04, 0, -0.33, 0.41, P.perilla);
+
+  // gafas
+  P.gafas = grupo(cabeza);
+  const montura = mat(0x111111, 0.3);
+  for (const s of [-1, 1]) {
+    const aroG = new THREE.Mesh(new THREE.TorusGeometry(0.12, 0.016, 10, 36), montura); aroG.position.set(s * 0.2, -0.04, 0.46); P.gafas.add(aroG);
+    const patilla = new THREE.Mesh(new THREE.BoxGeometry(0.02, 0.02, 0.44), montura); patilla.position.set(s * 0.32, 0, 0.24); P.gafas.add(patilla);
+  }
+  const puente = new THREE.Mesh(new THREE.BoxGeometry(0.1, 0.018, 0.018), montura); puente.position.set(0, -0.0, 0.46); P.gafas.add(puente);
+  P.cristales = grupo(P.gafas);
+  for (const s of [-1, 1]) { const c = new THREE.Mesh(new THREE.CircleGeometry(0.115, 32), mat(0x0b1d26, 0.05, { metalness: 0.5, transparent: true, opacity: 0.92 })); c.position.set(s * 0.2, -0.04, 0.462); P.cristales.add(c); }
+
+  // gorra de Fotarto y auriculares
+  P.gorra = grupo(cabeza);
+  const copa = caja(1.07, 0.32, 0.93, 0.15, turquesa); copa.position.set(0, 0.4, -0.01); P.gorra.add(copa);
+  const visera = caja(0.62, 0.04, 0.34, 0.02, turquesa); visera.position.set(0, 0.27, 0.56); P.gorra.add(visera);
+  const fGorra = calcomania('manga', 0.16); fGorra.material = fGorra.material.clone(); fGorra.material.color = new THREE.Color(0x0b0c10);
+  fGorra.position.set(0, 0.42, 0.457); P.gorra.add(fGorra);
+  P.auriculares = grupo(cabeza);
+  const diadema = new THREE.Mesh(new THREE.TorusGeometry(0.56, 0.035, 12, 60, Math.PI), negroBrillo); diadema.position.y = 0.0; diadema.scale.set(1, 1.05, 1); P.auriculares.add(diadema);
+  for (const s of [-1, 1]) {
+    const cup = new THREE.Mesh(new THREE.CylinderGeometry(0.13, 0.13, 0.09, 32), negroBrillo); cup.rotation.z = Math.PI / 2; cup.position.set(s * 0.54, -0.03, 0); P.auriculares.add(cup);
+    const luz = new THREE.Mesh(new THREE.TorusGeometry(0.1, 0.012, 8, 32), turquesa); luz.rotation.y = Math.PI / 2; luz.position.set(s * 0.59, -0.03, 0); P.auriculares.add(luz);
+  }
+
+  g.userData.partes = P;
   return g;
 }
 
 function aplicarOpciones(funko, o) {
-  const p = funko.userData.partes;
-  const tono = new THREE.Color(OPCIONES_FUNKO.piel[o.piel].hex);
-  p.piel.color.copy(tono);
-  p.nariz.material.color.copy(tono).multiplyScalar(0.92);
-  p.pelo.color.set(OPCIONES_FUNKO.pelo[o.pelo].hex);
-  p.melena.visible = o.peinado === 'largo';
-  p.coleta.visible = o.peinado === 'coleta';
-  p.camara.visible = o.objeto === 'camara';
+  const P = funko.userData.partes;
+  const tono = new THREE.Color(colorDe(OPCIONES_FUNKO.piel, o.piel));
+  P.piel.color.copy(tono);
+  P.nariz.material.color.copy(tono).multiplyScalar(0.92);
+  P.pelo.color.set(colorDe(OPCIONES_FUNKO.pelo, o.pelo));
+  const pe = o.peinado || 'corto';
+  P.base.visible = ['corto', 'largo', 'coleta', 'mono'].includes(pe);
+  P.mechon.visible = ['corto', 'largo'].includes(pe);
+  P.melena.visible = pe === 'largo';
+  P.coleta.visible = pe === 'coleta';
+  P.mono.visible = pe === 'mono';
+  P.afro.visible = pe === 'afro';
+  P.rapado.visible = pe === 'rapado';
+  P.barba.visible = o.barba === 'barba';
+  P.bigote.visible = o.barba === 'bigote' || o.barba === 'barba';
+  P.perilla.visible = o.barba === 'perilla';
+  P.gafas.visible = o.gafas === 'vista' || o.gafas === 'sol';
+  P.cristales.visible = o.gafas === 'sol';
+  P.gorra.visible = o.gorro === 'gorra';
+  P.auriculares.visible = o.gorro === 'auriculares';
+  if (o.gorro === 'gorra') { P.mechon.visible = false; P.mono.visible = false; }
+  const ropa = o.ropa || 'uniforme';
+  P.uniforme.visible = ropa === 'uniforme';
+  P.sudadera.visible = ropa === 'sudadera';
+  P.elegante.visible = ropa === 'elegante';
+  P.falda.visible = ropa === 'vestido';
+  const colorRopa = colorDe(OPCIONES_FUNKO.ropaColor, o.ropaColor || 'negro');
+  if (ropa === 'uniforme') P.tela.color.set('#141519');
+  else if (ropa === 'elegante') { P.tela.color.set('#1D2433'); P.acento.color.set(colorRopa); }
+  else P.tela.color.set(colorRopa);
+  P.camara.visible = o.objeto === 'camara';
+  P.ramo.visible = o.objeto === 'ramo';
+  P.movil.visible = o.objeto === 'movil';
+  P.texNombre.userData.dibujar(o.nombre || '');
 }
 
 export default function Funko3D({ opciones = FUNKO_INICIAL, etiqueta = 'Ejemplo · Tu Funko en 3D' }) {
@@ -175,7 +301,7 @@ export default function Funko3D({ opciones = FUNKO_INICIAL, etiqueta = 'Ejemplo 
     const canvas = ref.current;
     let renderer;
     try {
-      renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
+      renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true, preserveDrawingBuffer: true });
     } catch (e) { setError(true); return undefined; }
     renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
     renderer.outputColorSpace = THREE.SRGBColorSpace;
@@ -253,7 +379,7 @@ export default function Funko3D({ opciones = FUNKO_INICIAL, etiqueta = 'Ejemplo 
 
   return (
     <div className="relative rounded-2xl overflow-hidden border-2 border-[#00E5FF] glow-box" style={{ background: 'radial-gradient(circle at 50% 40%, #16323a 0%, #0B0C10 70%)' }}>
-      <canvas ref={ref} className="block w-full aspect-[4/5] cursor-grab active:cursor-grabbing touch-pan-y" aria-label="Funko de ejemplo con el uniforme de Fotarto: polo negro con ribetes turquesa, logotipo y una cámara en las manos" />
+      <canvas ref={ref} data-funko className="block w-full aspect-[4/5] cursor-grab active:cursor-grabbing touch-pan-y" aria-label="Funko personalizable en 3D: arrástralo para girarlo" />
       {error && <p className="absolute inset-0 flex items-center justify-center text-[#8D93AB] text-sm p-6 text-center">Tu navegador no admite gráficos 3D (WebGL).</p>}
       <span className="absolute top-3 left-3 px-2 py-1 rounded bg-black/60 text-xs font-bold text-[#00E5FF]">{etiqueta}</span>
       <span className="absolute bottom-3 left-1/2 -translate-x-1/2 px-3 py-1 rounded-full bg-black/60 text-xs text-[#C9CDD8] flex items-center gap-1.5"><Hand className="w-3.5 h-3.5" /> Arrastra para girarlo</span>

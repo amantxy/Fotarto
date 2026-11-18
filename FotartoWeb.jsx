@@ -4,6 +4,7 @@ import { Camera, Aperture, Send, MapPin, Phone, Mail, Users } from 'lucide-react
 // El simulador 3D se descarga solo cuando se abre su pestaña (la web inicial sigue siendo ligera)
 const TuEstudio = lazy(() => import('./TuEstudio.jsx'));
 const FunkoPagina = lazy(() => import('./FunkoPagina.jsx'));
+import Zonas from './Zonas.jsx';
 import { AGENDA_INICIAL, AgendaPapel, ProcesoDigital, SalasAntes, EjemploReal } from './Transformacion.jsx';
 
 export default function FotartoWeb() {
@@ -54,6 +55,7 @@ export default function FotartoWeb() {
   // Datos para las tarifas
   const tarifas = [
     { id: 1, title: 'Tu Funko en 3D', price: '49,99€', desc: 'Oferta de lanzamiento. Modelado 3D + Impresión en resina premium.' },
+    { id: 7, title: 'Figura realista 3D', price: 'desde 129€', desc: 'Escaneo completo con fotogrametría + impresión a todo color. 10, 15 o 20 cm.' },
     { id: 2, title: 'Pack Comunión/Bautizo', price: 'desde 199€', desc: 'Sesión en Sala Premium BBC + Álbum Digital maquetado.' },
     { id: 3, title: 'Pack Boda "Cine" 4K', price: 'desde 899€', desc: 'Cobertura total del evento + Reportaje cinematográfico.' },
     { id: 4, title: 'Sala Multiusos', price: '30€ / hora', desc: 'Ciclorama blanco, raíles de techo, ventanas de luz natural.' },
@@ -296,22 +298,7 @@ export default function FotartoWeb() {
             </a>
             <p className="text-center text-sm text-[#8D93AB] mt-3 mb-12">Plano de distribución · Toca la imagen para verla en grande</p>
 
-            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-              {[
-                { t: 'Sala 1: Multiusos', d: 'Ciclorama blanco, raíles de iluminación en el techo y ventanas de luz natural.' },
-                { t: 'Sala 2: Eventos BBC', d: 'Ambiente cálido y elegante para bodas, bautizos y comuniones.' },
-                { t: 'Sala 3: Cine de Acción', d: 'Black box con focos, tubos LED, máquinas de humo y cámaras de vídeo.' },
-                { t: 'Recepción y Taller 3D', d: 'Atención al cliente, vitrinas e impresoras de resina donde nacen los Funkos 3D.' },
-                { t: 'Edición y Poscopia', d: 'Puestos de retoque, impresión fotográfica y restauración digital.' },
-              ].map((zona) => (
-                <div key={zona.t} className="p-6 border border-[#8D93AB]/30 rounded-lg bg-[#151720] hover:border-[#00E5FF] transition-colors">
-                  <h3 className="text-xl font-bold text-white mb-2 flex items-center gap-2">
-                    <MapPin className="w-5 h-5 text-[#00E5FF]" /> {zona.t}
-                  </h3>
-                  <p className="text-[#8D93AB] text-sm">{zona.d}</p>
-                </div>
-              ))}
-            </div>
+            <Zonas onReservar={() => irA('Contacto')} />
           </section>
         )}
 
