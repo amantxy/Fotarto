@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import {
   Pencil, Trash2, Check, Plus, ArrowRight, ArrowLeft, RotateCcw, ScanLine, AlertTriangle, CalendarCheck,
-  MessageCircle, Boxes, CheckCircle2, PhoneMissed, PackageSearch, Clock, Sparkles,
+  MessageCircle, Boxes, CheckCircle2, PhoneMissed, PackageSearch, Clock, Sparkles, Camera, Upload, ImageIcon, FileText, Loader2,
 } from 'lucide-react';
 
 // ---------------------------------------------------------------------------
@@ -566,6 +566,236 @@ export function ProcesoDigital({ agenda, ejecucion, onVolver }) {
           </table>
         </div>
       </div>
+    </div>
+  );
+}
+
+
+// ---------------------------------------------------------------------------
+// EJEMPLO REAL: foto de un papel escrito a mano → transcripción → sistema digital
+// ---------------------------------------------------------------------------
+const DIAS_RE = [/^\s*lu/i, /^\s*ma/i, /^\s*mi/i, /^\s*ju/i, /^\s*vi/i];
+const ES_DIA = /^\s*(lunes|martes|mi[eé]rcoles|jueves|viernes)\b/i;
+const HORA_RE = /\b([01]?\d|2[0-3])\s*[:.,h']\s*([0-5]\d)\b|\b([01]?\d|2[0-3])\s*h\b/i;
+
+function salaDe(t) {
+  if (/multi|ciclo|producto|carnet|book|funko|escaneo/i.test(t)) return 'multiusos';
+  if (/cine|acci[oó]n|rodaje|videoclip|corto|humo/i.test(t)) return 'cine';
+  if (/b[b8]c|boda|bautizo|comuni[oó]n|preboda|evento/i.test(t)) return 'bbc';
+  return '';
+}
+
+// Convierte el texto transcrito en reservas y notas
+export function parsearTexto(texto) {
+  const reservas = [], notas = [];
+  let dia = 0, id = 1000, ultimaEraNota = false;
+  for (const bruta of texto.split(/\n+/)) {
+    const linea = bruta.replace(/[|_~\[\]{}<>»«=]+/g, ' ').replace(/\s+/g, ' ').trim().replace(/^[^a-záéíóúñ0-9¿¡(]+/i, '');
+    // descartar garabatos: pocas letras o ninguna palabra reconocible
+    const letras = (linea.match(/[a-záéíóúñü ]/gi) || []).length;
+    // continuación de la nota anterior (línea corta que empieza en minúscula o número)
+    const cont = linea.replace(/^[\s"”“'·•\-–—]+/, '');
+    if (notas.length && ultimaEraNota && !HORA_RE.test(cont) && /^[a-záéíóúñ0-9(]/.test(cont) && cont.length < 25 && !/[.?!)]$/.test(notas[notas.length - 1])) {
+      notas[notas.length - 1] += ` ${cont}`;
+      continue;
+    }
+    const trozos = linea.split(' ');
+    const palabras = trozos.filter((w) => /[a-záéíóúñ]{3,}/i.test(w)).length;
+    if (trozos.filter((w) => w.length <= 1).length > trozos.length / 2) continue;
+    if (letras < 4 || letras / linea.length < 0.6 || (palabras < 2 && !HORA_RE.test(linea) && !ES_DIA.test(linea))) continue;
+    if (/agenda|semana|noviembre|pendientes|^\W*ojo/i.test(linea) && !HORA_RE.test(linea)) continue;
+    const md = linea.match(ES_DIA);
+    if (md) {
+      dia = DIAS_RE.findIndex((r) => r.test(md[1]));
+      ultimaEraNota = false;
+      if (!HORA_RE.test(linea)) continue;
+    }
+    const mh = linea.match(HORA_RE);
+    if (mh) {
+      const hh = Number(mh[1] ?? mh[3]), mm = Number(mh[2] ?? 0);
+      let inicio = Math.round((hh * 60 + mm) / 30) * 30;
+      inicio = Math.min(CIERRE - 30, Math.max(APERTURA, inicio));
+      const mdur = linea.match(/\((\d+(?:[.,]5)?)\s*h\)/i) || linea.match(/(\d+(?:[.,]5)?)\s*horas?\b/i);
+      const mmin = linea.match(/(\d{2,3})\s*min/i);
+      const dur = mdur ? Math.round(parseFloat(mdur[1].replace(',', '.')) * 60 / 30) * 30 : mmin ? Math.max(30, Math.round(Number(mmin[1]) / 30) * 30) : 60;
+      const sala = salaDe(linea);
+      let limpio = linea
+        .replace(ES_DIA, '').replace(HORA_RE, '').replace(/\((\d+(?:[.,]5)?)\s*h\)/i, '').replace(/\d{2,3}\s*min/i, '').trim();
+      // quitar del final la sala, la duración y restos sueltos de la lectura
+      for (let i = 0; i < 4; i++) {
+        limpio = limpio
+          .replace(/[\s·•:+\-–—,]*(multi\w*|cine|b[b8]c|580|¿?[cs]ala\??)\s*$/i, '')
+          .replace(/\s*\(\s*\d*\s*[hH]?\s*\)?\s*$/, '')
+          .replace(/\s+(?![A-ZÁÉÍÓÚÑ]\.$)[^\s]{1,2}$/, '')
+          .replace(/[\s\-–—·:,+]+$/, '').replace(/(?<![A-ZÁÉÍÓÚÑ])\.+$/, '').trim();
+      }
+      limpio = limpio.replace(/^[\s\-–—·:.,]+/, '').replace(/\s*[-–—]{2,}\s*/g, ' – ');
+      ultimaEraNota = false;
+      reservas.push({ id: id++, dia: Math.max(0, dia), inicio, dur: Math.min(180, Math.max(30, dur)), sala, texto: limpio || 'Reserva' });
+    } else {
+      notas.push(linea.replace(/^[\s\-–—·•*"”“']+/, ''));
+      ultimaEraNota = true;
+    }
+  }
+  return { reservas, notas };
+}
+
+// Prepara la foto para leerla mejor: tamaño, gris y contraste
+async function prepararImagen(archivo) {
+  const url = URL.createObjectURL(archivo);
+  const img = await new Promise((ok, mal) => { const i = new Image(); i.onload = () => ok(i); i.onerror = mal; i.src = url; });
+  const esc = Math.min(1, 2200 / Math.max(img.width, img.height));
+  const c = document.createElement('canvas');
+  c.width = Math.round(img.width * esc); c.height = Math.round(img.height * esc);
+  const ctx = c.getContext('2d');
+  ctx.drawImage(img, 0, 0, c.width, c.height);
+  const d = ctx.getImageData(0, 0, c.width, c.height), p = d.data;
+  for (let i = 0; i < p.length; i += 4) {
+    const g = 0.3 * p[i] + 0.59 * p[i + 1] + 0.11 * p[i + 2];
+    const v = Math.max(0, Math.min(255, (g - 128) * 1.5 + 140));
+    p[i] = p[i + 1] = p[i + 2] = v;
+  }
+  ctx.putImageData(d, 0, 0);
+  return { canvas: c, url };
+}
+
+const ESTADOS_OCR = {
+  'loading tesseract core': 'Preparando el lector de texto…',
+  'initializing tesseract': 'Preparando el lector de texto…',
+  'loading language traineddata': 'Cargando el idioma español…',
+  'initializing api': 'Iniciando…',
+  'recognizing text': 'Leyendo la letra…',
+};
+
+export function EjemploReal({ setAgenda, onProcesar }) {
+  const [foto, setFoto] = useState(null);
+  const [estado, setEstado] = useState(null); // { txt, prog }
+  const [texto, setTexto] = useState('');
+  const [rev, setRev] = useState(null);
+  const [error, setError] = useState('');
+
+  const leer = async (archivo) => {
+    if (!archivo) return;
+    setError(''); setRev(null); setTexto('');
+    try {
+      const { canvas, url } = await prepararImagen(archivo);
+      setFoto(url);
+      setEstado({ txt: 'Preparando el lector de texto…', prog: 0 });
+      const T = await import('tesseract.js');
+      const createWorker = T.createWorker || T.default?.createWorker;
+      const base = new URL('assets/ocr/', window.location.href).href;
+      const worker = await createWorker('spa', 1, {
+        workerPath: `${base}worker.min.js`, corePath: `${base}core/`, langPath: `${base}lang`, gzip: true,
+        logger: (m) => setEstado({ txt: ESTADOS_OCR[m.status] || 'Procesando…', prog: m.status === 'recognizing text' ? m.progress : 0 }),
+      });
+      // Agenda abierta a doble página (foto apaisada): se lee cada página por separado
+      const W = canvas.width, H = canvas.height;
+      const zonas = W > H * 1.25
+        ? [{ left: 0, top: 0, width: Math.round(W / 2), height: H }, { left: Math.round(W / 2), top: 0, width: W - Math.round(W / 2), height: H }]
+        : [null];
+      let leido = '';
+      for (const z of zonas) {
+        const { data } = await worker.recognize(canvas, z ? { rectangle: z } : {});
+        leido += data.text + '\n';
+      }
+      await worker.terminate();
+      setTexto(leido.trim());
+      setRev(parsearTexto(leido));
+      setEstado(null);
+    } catch (e) {
+      console.error(e);
+      setEstado(null);
+      setError('No se ha podido leer la imagen. Prueba con otra foto, con más luz y el papel bien recto.');
+    }
+  };
+
+  const ejemplo = async () => {
+    const r = await fetch('assets/img/ejemplo-agenda.jpg');
+    const b = await r.blob();
+    leer(new File([b], 'ejemplo-agenda.jpg', { type: b.type }));
+  };
+
+  const cambiar = (id, c) => setRev((r) => ({ ...r, reservas: r.reservas.map((x) => (x.id === id ? { ...x, ...c } : x)) }));
+  const campoR = 'bg-[#0B0C10] border border-[#8D93AB]/50 rounded-md p-2 text-white text-sm focus:outline-none focus:border-[#00E5FF] min-w-0';
+
+  return (
+    <div className="rounded-2xl border-2 border-[#00E5FF] glow-box bg-[#0E1016] p-6 md:p-10">
+      <h3 className="text-3xl md:text-4xl font-playfair font-bold text-[#00E5FF] mb-3">Realiza el ejemplo real</h3>
+      <p className="text-lg text-[#8D93AB] max-w-3xl mb-8">
+        Haz una foto a un papel escrito a mano —una agenda, una lista de reservas, unas notas— y mira cómo se transcribe y pasa al sistema digital sin teclear nada. Escribe una línea por reserva con el día, la hora y qué es; por ejemplo: <span className="font-mano text-xl text-[#FFF59D]">«Miércoles · 17:00 Bautizo García BBC (2 h)»</span>.
+      </p>
+
+      <div className="flex flex-wrap gap-3">
+        <label className="inline-flex items-center gap-2 px-5 py-3 rounded-full bg-[#00E5FF] text-[#0B0C10] font-bold cursor-pointer hover:bg-white transition-colors">
+          <Camera className="w-5 h-5" /> Hacer una foto
+          <input type="file" accept="image/*" capture="environment" className="sr-only" onChange={(e) => leer(e.target.files?.[0])} />
+        </label>
+        <label className="inline-flex items-center gap-2 px-5 py-3 rounded-full border border-[#00E5FF] text-[#00E5FF] font-bold cursor-pointer hover:bg-[#00E5FF]/10 transition-colors">
+          <Upload className="w-5 h-5" /> Subir una imagen
+          <input type="file" accept="image/*" className="sr-only" onChange={(e) => leer(e.target.files?.[0])} />
+        </label>
+        <button type="button" onClick={ejemplo} className="inline-flex items-center gap-2 px-5 py-3 rounded-full border border-[#8D93AB]/50 text-[#8D93AB] font-semibold hover:text-white hover:border-white transition-colors">
+          <ImageIcon className="w-5 h-5" /> Probar con una foto de ejemplo
+        </button>
+      </div>
+      <p className="text-xs text-[#8D93AB] mt-3">La foto se lee dentro de tu propio navegador: no se envía a ningún servidor. La primera vez descarga el lector de texto (unos 6 MB).</p>
+
+      {error && <p className="mt-6 p-3 rounded-md border border-[#F28482]/50 bg-[#F28482]/10 text-sm text-white">{error}</p>}
+
+      {(foto || estado) && (
+        <div className="mt-8 grid lg:grid-cols-[minmax(0,0.8fr)_minmax(0,1.2fr)] gap-8 items-start">
+          <div>
+            <p className="text-xs uppercase tracking-wider text-[#8D93AB] mb-2">1 · Tu foto</p>
+            {foto && <img src={foto} alt="Foto del papel escrito a mano" className="w-full rounded-lg border border-[#8D93AB]/40" />}
+            {texto && (
+              <details className="mt-3 text-sm text-[#8D93AB]">
+                <summary className="cursor-pointer flex items-center gap-2 hover:text-white"><FileText className="w-4 h-4" /> Ver el texto tal como se ha leído</summary>
+                <pre className="mt-2 p-3 rounded-md bg-[#0B0C10] border border-[#8D93AB]/30 whitespace-pre-wrap text-xs text-[#C9CDD8] max-h-64 overflow-auto">{texto}</pre>
+              </details>
+            )}
+          </div>
+
+          <div>
+            <p className="text-xs uppercase tracking-wider text-[#8D93AB] mb-2">2 · Transcripción ordenada</p>
+            {estado && (
+              <div className="p-6 rounded-lg bg-[#151720] border border-[#8D93AB]/30">
+                <p className="text-white flex items-center gap-2 mb-3"><Loader2 className="w-5 h-5 animate-spin text-[#00E5FF]" /> {estado.txt}</p>
+                <div className="h-2 rounded-full bg-[#2A2D36] overflow-hidden"><div className="h-full bg-[#00E5FF] transition-all duration-300" style={{ width: `${Math.round((estado.prog || 0.04) * 100)}%` }} /></div>
+              </div>
+            )}
+            {rev && (
+              <div className="space-y-4">
+                <p className="text-sm text-[#8D93AB]">
+                  Se han encontrado <strong className="text-white">{rev.reservas.length} reservas</strong> y <strong className="text-white">{rev.notas.length} notas</strong>. Revisa y corrige lo que se haya leído mal: la letra a mano no siempre es fácil.
+                </p>
+                <div className="space-y-2">
+                  {rev.reservas.map((r) => (
+                    <div key={r.id} className="grid grid-cols-2 sm:grid-cols-[minmax(0,1.3fr)_minmax(0,1fr)_minmax(0,1.2fr)_minmax(0,1fr)_36px] gap-2 items-center p-2 rounded-md bg-[#151720] border border-[#8D93AB]/25">
+                      <input aria-label="Qué" value={r.texto} onChange={(e) => cambiar(r.id, { texto: e.target.value })} className={`${campoR} col-span-full`} />
+                      <select aria-label="Día" value={r.dia} onChange={(e) => cambiar(r.id, { dia: Number(e.target.value) })} className={campoR}>{DIAS.map((d, i) => <option key={d} value={i}>{d}</option>)}</select>
+                      <select aria-label="Hora" value={r.inicio} onChange={(e) => cambiar(r.id, { inicio: Number(e.target.value) })} className={campoR}>{HORAS.map((m) => <option key={m} value={m}>{hora(m)}</option>)}</select>
+                      <select aria-label="Sala" value={r.sala} onChange={(e) => cambiar(r.id, { sala: e.target.value })} className={campoR}><option value="">¿sala?</option>{Object.entries(SALAS).map(([k, x]) => <option key={k} value={k}>{x.corto}</option>)}</select>
+                      <select aria-label="Duración" value={r.dur} onChange={(e) => cambiar(r.id, { dur: Number(e.target.value) })} className={campoR}>{DURACIONES.map((d) => <option key={d} value={d}>{durTxt(d)}</option>)}</select>
+                      <button type="button" aria-label="Quitar" onClick={() => setRev((x) => ({ ...x, reservas: x.reservas.filter((y) => y.id !== r.id) }))} className="justify-self-end p-2 text-[#F28482] hover:text-white"><Trash2 className="w-4 h-4" /></button>
+                    </div>
+                  ))}
+                  <button type="button" onClick={() => setRev((x) => ({ ...x, reservas: [...x.reservas, { id: Date.now(), dia: 0, inicio: h('10:00'), dur: 60, sala: '', texto: '' }] }))} className="text-sm text-[#00E5FF] flex items-center gap-1 hover:text-white"><Plus className="w-4 h-4" /> Añadir una reserva que no se haya leído</button>
+                </div>
+                <div>
+                  <p className="text-xs uppercase tracking-wider text-[#8D93AB] mb-2">Notas (una por línea)</p>
+                  <textarea rows={Math.max(3, rev.notas.length + 1)} value={rev.notas.join('\n')} onChange={(e) => setRev((x) => ({ ...x, notas: e.target.value.split('\n') }))} className={`${campoR} w-full font-mano text-lg`} />
+                </div>
+                <button type="button" disabled={!rev.reservas.length && !rev.notas.some((n) => n.trim())}
+                  onClick={() => { setAgenda({ reservas: rev.reservas, notas: rev.notas.filter((n) => n.trim()) }); onProcesar(); }}
+                  className="w-full sm:w-auto inline-flex items-center justify-center gap-3 px-6 py-4 rounded-full bg-[#00E5FF] text-[#0B0C10] font-bold text-lg hover:bg-white transition-colors disabled:opacity-40">
+                  <ScanLine className="w-6 h-6" /> 3 · Pasar al sistema digital <ArrowRight className="w-5 h-5" />
+                </button>
+                <p className="text-xs text-[#8D93AB]">Se sustituye la agenda de ejemplo por la tuya y verás el proceso completo justo arriba: solapamientos, calendario, tareas y avisos.</p>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 }

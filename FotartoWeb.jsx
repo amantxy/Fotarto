@@ -3,7 +3,7 @@ import { Camera, Aperture, Send, MapPin, Phone, Mail, Users } from 'lucide-react
 
 // El simulador 3D se descarga solo cuando se abre su pestaña (la web inicial sigue siendo ligera)
 const TuEstudio = lazy(() => import('./TuEstudio.jsx'));
-import { AGENDA_INICIAL, AgendaPapel, ProcesoDigital, SalasAntes } from './Transformacion.jsx';
+import { AGENDA_INICIAL, AgendaPapel, ProcesoDigital, SalasAntes, EjemploReal } from './Transformacion.jsx';
 
 export default function FotartoWeb() {
   const [activeTab, setActiveTab] = useState('Fotarto');
@@ -247,8 +247,12 @@ export default function FotartoWeb() {
               </div>
             </div>
 
-            <div className="mt-16">
+            <div id="proceso" className="mt-16 scroll-mt-[calc(var(--alto-cabecera,120px)+16px)]">
               <ProcesoDigital agenda={agenda} ejecucion={ejecucion} onVolver={() => irA('De dónde venimos')} />
+            </div>
+
+            <div className="mt-16">
+              <EjemploReal setAgenda={setAgenda} onProcesar={() => { setEjecucion((n) => n + 1); document.getElementById('proceso')?.scrollIntoView({ behavior: 'smooth' }); }} />
             </div>
           </section>
         )}
@@ -393,22 +397,30 @@ export default function FotartoWeb() {
                   </div>
                 </div>
 
-                {/* Uniforme Oficial */}
-                <div className="pt-6 border-t border-[#8D93AB]/30 space-y-4">
-                  <p className="text-center font-playfair text-2xl text-[#00E5FF] italic">Uniforme Oficial Fotarto</p>
-                  <img
-                    src="assets/img/uniforme-equipo.jpg"
-                    alt="Equipo de Fotarto con el uniforme oficial en el estudio"
-                    className="w-full rounded-lg border-2 border-[#00E5FF] glow-box"
-                  />
+              </div>
+            </div>
+
+            {/* Uniforme Oficial: a todo el ancho, las dos imágenes lado a lado en el ordenador */}
+            <div className="mt-16 pt-10 border-t border-[#8D93AB]/30">
+              <h3 className="text-center font-playfair text-3xl md:text-4xl text-[#00E5FF] italic mb-8">Uniforme Oficial Fotarto</h3>
+              <div className="grid md:grid-cols-[minmax(0,1fr)_minmax(0,1.7fr)] gap-6 items-stretch">
+                <img
+                  src="assets/img/uniforme-equipo.jpg"
+                  alt="Equipo de Fotarto con el uniforme oficial en el estudio"
+                  className="w-full h-full object-cover object-top rounded-xl border-2 border-[#00E5FF] glow-box"
+                />
+                <div className="flex flex-col gap-6">
                   <img
                     src="assets/img/uniforme-trabajo.jpg"
                     alt="Uniforme de trabajo Fotarto: vista frontal, lateral y trasera del polo negro con detalles turquesa"
-                    className="w-full rounded-lg border-2 border-[#00E5FF] glow-box"
+                    className="w-full rounded-xl border-2 border-[#00E5FF] glow-box"
                   />
-                  <p className="text-center text-lg font-semibold text-white">
-                    ¡También te diseñamos tu propio uniforme para que quede tan chulo como el nuestro!
-                  </p>
+                  <div className="flex-1 flex flex-col justify-center p-6 rounded-xl bg-[#151720] border border-[#8D93AB]/30 text-center">
+                    <p className="text-xl md:text-2xl font-playfair font-bold text-white">
+                      ¡También te diseñamos tu propio uniforme para que quede tan chulo como el nuestro!
+                    </p>
+                    <p className="text-sm text-[#8D93AB] mt-3">Polo negro con ribetes turquesa y el logotipo bordado en el pecho, la manga y la espalda.</p>
+                  </div>
                 </div>
               </div>
             </div>
