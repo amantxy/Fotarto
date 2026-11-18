@@ -115,21 +115,21 @@ export default function Zonas({ onReservar }) {
   const cerrar = useCallback(() => setAbierta(null), []);
   return (
     <>
-      <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 md:gap-6">
         {ZONAS.map((zona) => (
           <button key={zona.id} type="button" onClick={() => setAbierta(zona.id)} aria-label={`Ver ${zona.t} por dentro`}
             className="group text-left rounded-xl overflow-hidden border border-[#8D93AB]/30 bg-[#151720] hover:border-[#00E5FF] hover:-translate-y-1 transition-all duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#00E5FF]">
-            <div className="relative h-44 overflow-hidden">
+            <div className="relative h-28 sm:h-36 md:h-44 overflow-hidden">
               {zona.Ilustracion
                 ? <zona.Ilustracion className="w-full h-full transition-transform duration-500 group-hover:scale-105" />
                 : <img src={zona.img} alt="" loading="lazy" className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />}
-              {zona.privado && <span className="absolute top-2 left-2 px-2 py-1 rounded bg-[#FFD166] text-[11px] font-bold text-[#0B0C10] flex items-center gap-1"><Lock className="w-3 h-3" /> Sin acceso al público</span>}
-              <span className="absolute bottom-2 right-2 px-2 py-1 rounded bg-black/70 text-[11px] font-semibold text-[#00E5FF]">{zona.precio}</span>
+              {zona.privado && <span className="absolute top-1.5 left-1.5 px-1.5 py-0.5 rounded bg-[#FFD166] text-[10px] sm:text-[11px] font-bold text-[#0B0C10] flex items-center gap-1"><Lock className="w-3 h-3" /> Privado</span>}
+              <span className="absolute bottom-1.5 right-1.5 px-1.5 py-0.5 rounded bg-black/70 text-[10px] sm:text-[11px] font-semibold text-[#00E5FF]">{zona.precio}</span>
             </div>
-            <div className="p-5">
-              <h3 className="text-lg font-bold text-white mb-1">{zona.t}</h3>
-              <p className="text-[#8D93AB] text-sm mb-3">{zona.d}</p>
-              <span className="inline-flex items-center gap-1 text-sm font-semibold text-[#00E5FF] group-hover:gap-2 transition-all">Ver por dentro <ChevronRight className="w-4 h-4" /></span>
+            <div className="p-3 md:p-5">
+              <h3 className="text-sm sm:text-base md:text-lg font-bold text-white mb-1 leading-tight">{zona.t}</h3>
+              <p className="hidden sm:block text-[#8D93AB] text-sm mb-3">{zona.d}</p>
+              <span className="inline-flex items-center gap-1 text-xs sm:text-sm font-semibold text-[#00E5FF] group-hover:gap-2 transition-all">Ver por dentro <ChevronRight className="w-4 h-4" /></span>
             </div>
           </button>
         ))}

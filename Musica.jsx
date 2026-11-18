@@ -127,13 +127,13 @@ export default function Musica() {
       {/* botón lateral */}
       {!abierto && (
         <button type="button" onClick={() => setAbierto(true)} aria-label="Abrir el reproductor: añade tu propia playlist"
-          className="fixed z-[80] right-0 top-1/2 -translate-y-1/2 flex flex-col items-center gap-2 pl-2.5 pr-2 py-4 rounded-l-2xl bg-[#00E5FF] text-[#0B0C10] shadow-[0_0_25px_rgba(0,229,255,0.45)] hover:pr-3 transition-all">
+          className="fixed z-[80] right-4 bottom-4 w-14 h-14 rounded-full justify-center md:w-auto md:h-auto md:right-0 md:bottom-auto md:top-1/2 md:-translate-y-1/2 md:rounded-none md:rounded-l-2xl md:pl-2.5 md:pr-2 md:py-4 flex flex-col items-center gap-2 bg-[#00E5FF] text-[#0B0C10] shadow-[0_0_25px_rgba(0,229,255,0.45)] md:hover:pr-3 transition-all">
           {sonando ? (
             <span className="flex items-end gap-[3px] h-5" aria-hidden="true">
               {[0, 1, 2, 3].map((i) => <span key={i} className="w-[3px] bg-[#0B0C10] rounded-full animate-[eq_0.9s_ease-in-out_infinite]" style={{ animationDelay: `${i * 0.15}s`, height: '100%' }} />)}
             </span>
           ) : <Music className="w-5 h-5" />}
-          <span className="[writing-mode:vertical-rl] rotate-180 text-[11px] font-extrabold tracking-[0.2em]">TU PLAYLIST</span>
+          <span className="hidden md:block [writing-mode:vertical-rl] rotate-180 text-[11px] font-extrabold tracking-[0.2em]">TU PLAYLIST</span>
         </button>
       )}
 

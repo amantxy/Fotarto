@@ -116,7 +116,7 @@ export default function FunkoCreame({ onCrear }) {
   const { w, h } = base();
 
   return (
-    <div className="rounded-2xl border-2 border-[#00E5FF] glow-box bg-[#0E1016] p-6 md:p-8">
+    <div className="rounded-2xl border-2 border-[#00E5FF] glow-box bg-[#0E1016] p-4 sm:p-6 md:p-8">
       <div className="flex flex-wrap items-center gap-3 mb-2">
         <span className="px-3 py-1 rounded-full bg-[#00E5FF] text-[#0B0C10] text-sm font-extrabold tracking-[0.25em]">¡CRÉAME!</span>
         <h3 className="text-2xl md:text-3xl font-playfair font-bold text-white">Tu Funko a partir de una foto</h3>

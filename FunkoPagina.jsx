@@ -63,10 +63,10 @@ export default function FunkoPagina({ onPedir }) {
   };
 
   return (
-    <section className="animate-in fade-in slide-in-from-bottom-4 duration-700 space-y-16">
+    <section className="animate-in fade-in slide-in-from-bottom-4 duration-700 space-y-10 md:space-y-16">
       <div>
         <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#00E5FF] text-[#0B0C10] text-xs font-extrabold tracking-widest uppercase mb-4"><Sparkles className="w-4 h-4" /> Novedad</span>
-        <h2 className="text-4xl md:text-5xl font-playfair font-bold text-[#00E5FF] mb-4">Tu Funko en 3D</h2>
+        <h2 className="text-3xl md:text-5xl font-playfair font-bold text-[#00E5FF] mb-4">Tu Funko en 3D</h2>
         <p className="text-lg text-[#8D93AB] max-w-3xl leading-relaxed">
           Te escaneamos en el estudio con nuestro escáner 3D, modelamos tu figura y la imprimimos en resina premium, pintada a mano. Personalízala aquí o pulsa <strong className="text-white">¡CRÉAME!</strong> y créala a partir de una foto tuya.
         </p>
@@ -120,31 +120,31 @@ export default function FunkoPagina({ onPedir }) {
 
       <div>
         <h3 className="text-3xl font-playfair font-bold text-white mb-6">Cómo funciona</h3>
-        <ol className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <ol className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4">
           {[
             { i: CalendarCheck, t: 'Reserva', d: 'Pide cita online: el sistema te da el primer hueco libre en la Sala Multiusos.' },
             { i: ScanFace, t: 'Escaneo 3D', d: 'Unos segundos dentro de nuestro escáner. Ven con la ropa y el objeto que quieras.' },
             { i: Paintbrush, t: 'Modelado y pintado', d: 'Modelamos tu figura, la imprimimos en resina premium y la pintamos a mano.' },
             { i: MessageCircle, t: 'Aviso y recogida', d: 'Sigue tu encargo en nuestro tablero y te avisamos por WhatsApp cuando esté listo.' },
           ].map(({ i: I, t, d }, n) => (
-            <li key={t} className="p-5 rounded-xl border border-[#8D93AB]/30 bg-[#151720]">
+            <li key={t} className="p-3 md:p-5 rounded-xl border border-[#8D93AB]/30 bg-[#151720]">
               <div className="flex items-center gap-3 mb-3">
                 <span className="w-9 h-9 rounded-full bg-[#00E5FF]/10 border border-[#00E5FF] text-[#00E5FF] font-bold flex items-center justify-center">{n + 1}</span>
                 <I className="w-6 h-6 text-[#00E5FF]" />
               </div>
-              <h4 className="font-bold text-white mb-1">{t}</h4>
-              <p className="text-sm text-[#8D93AB]">{d}</p>
+              <h4 className="font-bold text-white text-sm md:text-base mb-1">{t}</h4>
+              <p className="text-xs md:text-sm text-[#8D93AB]">{d}</p>
             </li>
           ))}
         </ol>
       </div>
 
       {/* ¿MÁS REAL? */}
-      <div className="rounded-2xl border border-[#8D93AB]/30 bg-[#0E1016] p-6 md:p-10 space-y-8">
+      <div className="rounded-2xl border border-[#8D93AB]/30 bg-[#0E1016] p-4 sm:p-6 md:p-10 space-y-8">
         <div className="grid lg:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)] gap-8 items-center">
           <div>
             <p className="text-xs uppercase tracking-[0.3em] text-[#8D93AB] mb-2">Un paso más allá</p>
-            <h3 className="text-4xl md:text-5xl font-playfair font-bold text-[#00E5FF] mb-4">¿Más real?</h3>
+            <h3 className="text-3xl md:text-5xl font-playfair font-bold text-[#00E5FF] mb-4">¿Más real?</h3>
             <p className="text-lg text-[#8D93AB] leading-relaxed mb-5">
               Si prefieres una figura idéntica a ti y no estilo Funko, te hacemos una <strong className="text-white">miniatura realista a todo color</strong>: tu cara, tu pelo, tu ropa y tu pose, tal cual. La capturamos con nuestro escáner de fotogrametría en una fracción de segundo.
             </p>
@@ -153,10 +153,10 @@ export default function FunkoPagina({ onPedir }) {
                 <li key={t} className="flex gap-2 text-[#C9CDD8]"><Check className="w-5 h-5 text-[#00E5FF] shrink-0" />{t}</li>
               ))}
             </ul>
-            <div className="grid grid-cols-3 gap-3 mb-6">
+            <div className="grid grid-cols-3 gap-2 md:gap-3 mb-6">
               {[['10 cm', '129 €'], ['15 cm', '169 €'], ['20 cm', '229 €']].map(([t, p]) => (
-                <div key={t} className="p-3 rounded-lg bg-[#151720] border border-[#8D93AB]/30 text-center">
-                  <p className="text-sm text-[#8D93AB]">{t}</p><p className="text-2xl font-bold text-[#00E5FF]">{p}</p>
+                <div key={t} className="p-2 md:p-3 rounded-lg bg-[#151720] border border-[#8D93AB]/30 text-center">
+                  <p className="text-xs md:text-sm text-[#8D93AB]">{t}</p><p className="text-lg md:text-2xl font-bold text-[#00E5FF] whitespace-nowrap">{p}</p>
                 </div>
               ))}
             </div>

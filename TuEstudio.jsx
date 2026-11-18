@@ -584,14 +584,14 @@ export default function TuEstudio() {
 
   return (
     <section className="animate-in fade-in slide-in-from-bottom-4 duration-700">
-      <h2 className="text-4xl md:text-5xl font-playfair font-bold text-[#00E5FF] mb-3">Tu estudio</h2>
+      <h2 className="text-3xl md:text-5xl font-playfair font-bold text-[#00E5FF] mb-3">Tu estudio</h2>
       <p className="text-lg text-[#8D93AB] mb-8 max-w-4xl">
         Diseña tu propio esquema de luz y mira cómo cae sobre un rostro real según el plano de cámara. Elige un esquema clásico o arrastra los focos en el plano del estudio.
       </p>
 
       <div className="grid lg:grid-cols-[minmax(0,1fr)_minmax(0,420px)] gap-8 items-start">
         {/* VISOR 3D: en el móvil se queda fijo arriba para ver el efecto mientras se mueven los controles */}
-        <div className="sticky top-[var(--alto-cabecera,118px)] lg:top-[calc(var(--alto-cabecera,200px)+16px)] z-20 -mx-6 px-6 pb-2 bg-[#0B0C10] lg:mx-0 lg:px-0 lg:pb-0 lg:bg-transparent">
+        <div className="sticky top-[var(--alto-cabecera,118px)] lg:top-[calc(var(--alto-cabecera,200px)+16px)] z-20 -mx-4 px-4 sm:-mx-6 sm:px-6 pb-2 bg-[#0B0C10] lg:mx-0 lg:px-0 lg:pb-0 lg:bg-transparent">
           <div className="relative rounded-xl overflow-hidden border-2 border-[#00E5FF] glow-box bg-[#0E0F12]">
             <canvas ref={canvasRef} className="block w-full h-[42vh] lg:h-[calc(100vh-var(--alto-cabecera,200px)-48px)] lg:min-h-[420px]" aria-label={`Simulación: ${info.nombre}, ${PLANOS[plano].nombre}, ángulo ${ANGULOS[angulo].nombre.toLowerCase()}`} />
             {(cargando || error) && (

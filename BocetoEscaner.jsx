@@ -138,9 +138,9 @@ function Vineta({ n }) {
 
 export function BocetoProceso() {
   return (
-    <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
+    <div className="flex lg:grid lg:grid-cols-5 gap-3 overflow-x-auto snap-x snap-mandatory -mx-4 px-4 sm:-mx-6 sm:px-6 lg:mx-0 lg:px-0 pb-2 no-scrollbar">
       {PASOS.map((p, i) => (
-        <figure key={p.t} className="rounded-lg overflow-hidden border border-[#d8ccb0] bg-[#f4efe4]">
+        <figure key={p.t} className="snap-start shrink-0 w-[44%] sm:w-[30%] lg:w-auto rounded-lg overflow-hidden border border-[#d8ccb0] bg-[#f4efe4]">
           <svg viewBox="0 0 160 130" className="w-full h-auto" role="img" aria-label={`Paso ${i + 1}: ${p.t}`}>
             <Filtro id="pro" />
             <text x="10" y="24" style={mano} fontSize="22" fill={TQ}>{i + 1}</text>

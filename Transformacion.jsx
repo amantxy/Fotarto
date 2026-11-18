@@ -116,11 +116,11 @@ const SALAS_ANTES = [
 
 export function SalasAntes() {
   return (
-    <div className="grid md:grid-cols-3 gap-6">
+    <div className="flex md:grid md:grid-cols-3 gap-4 md:gap-6 overflow-x-auto snap-x snap-mandatory -mx-4 px-4 md:mx-0 md:px-0 pb-2 no-scrollbar">
       {SALAS_ANTES.map((s) => (
-        <article key={s.titulo} className="rounded-xl overflow-hidden border border-[#8D93AB]/30 bg-[#151720] flex flex-col">
+        <article key={s.titulo} className="snap-center shrink-0 w-[82%] sm:w-[60%] md:w-auto rounded-xl overflow-hidden border border-[#8D93AB]/30 bg-[#151720] flex flex-col">
           <div className="relative">
-            <img src={s.img} alt={`${s.titulo} antes de la digitalización`} className="w-full h-48 object-cover [filter:sepia(0.75)_grayscale(0.35)_contrast(0.95)_brightness(0.9)]" loading="lazy" />
+            <img src={s.img} alt={`${s.titulo} antes de la digitalización`} className="w-full h-36 md:h-48 object-cover [filter:sepia(0.75)_grayscale(0.35)_contrast(0.95)_brightness(0.9)]" loading="lazy" />
             <span className="absolute top-3 left-3 px-2 py-1 rounded bg-black/70 text-xs font-bold tracking-wider uppercase text-[#FFD9B0]">Así era · 2025</span>
           </div>
           <div className="p-5 flex-1 flex flex-col gap-4">
@@ -150,11 +150,11 @@ function LineaReserva({ r, editando, onEditar, onGuardar, onBorrar, giro }) {
   if (!editando) {
     return (
       <button type="button" onClick={onEditar} className={`group w-full text-left flex items-baseline gap-2 min-h-[32px] leading-8 ${tinta} hover:bg-[#1f3a93]/5 rounded`} style={{ transform: `rotate(${giro}deg)` }}>
-        <span className="font-mano text-xl font-bold text-[#c0392b] w-14 shrink-0">{hora(r.inicio)}</span>
-        <span className="font-mano text-[22px] flex-1">
+        <span className="font-mano text-lg md:text-xl font-bold text-[#c0392b] w-12 md:w-14 shrink-0">{hora(r.inicio)}</span>
+        <span className="font-mano text-lg md:text-[22px] leading-7 md:leading-8 flex-1">
           {r.texto || '(sin nombre)'}
           <span className="text-[#1f3a93]/70"> · {r.sala ? SALAS[r.sala].corto : '¿sala?'}</span>
-          <span className="text-[#1f3a93]/50 text-lg"> ({durTxt(r.dur)})</span>
+          <span className="text-[#1f3a93]/50 text-base md:text-lg whitespace-nowrap"> ({durTxt(r.dur)})</span>
         </span>
         <Pencil className="w-4 h-4 opacity-30 group-hover:opacity-80 shrink-0" />
       </button>
@@ -184,7 +184,7 @@ function LineaReserva({ r, editando, onEditar, onGuardar, onBorrar, giro }) {
 function Pagina({ children, className = '' }) {
   return (
     <div
-      className={`relative pl-12 pr-5 pt-10 pb-8 bg-[#f6eedb] ${className}`}
+      className={`relative pl-11 pr-3 md:pl-12 md:pr-5 pt-10 pb-6 md:pb-8 bg-[#f6eedb] ${className}`}
       style={{ backgroundImage: 'repeating-linear-gradient(to bottom, transparent 0, transparent 31px, rgba(31,58,147,0.16) 31px, rgba(31,58,147,0.16) 32px)', backgroundPosition: '0 8px' }}
     >
       <div className="absolute top-0 bottom-0 left-9 w-px bg-[#e57373]/70" />
@@ -269,17 +269,17 @@ export function AgendaPapel({ agenda, setAgenda, onDigitalizar }) {
         </button>
       </div>
 
-      <div className="mt-10 grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="mt-8 md:mt-10 grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4">
         {[
           { i: AlertTriangle, t: 'Solapamientos', d: 'Dos reservas en la misma sala y a la misma hora, y nadie se entera hasta que llegan los clientes.' },
           { i: PhoneMissed, t: 'Llamadas sin respuesta', d: 'Avisar de que un encargo está listo dependía de que el cliente cogiera el teléfono.' },
           { i: PackageSearch, t: 'Material perdido', d: 'Tarjetas SD y focos que nadie sabía dónde estaban.' },
           { i: Boxes, t: 'Stock «a ojo»', d: 'La resina y el papel se pedían cuando ya se habían acabado.' },
         ].map(({ i: I, t, d }) => (
-          <div key={t} className="p-4 rounded-lg border border-[#F28482]/30 bg-[#F28482]/5">
-            <I className="w-6 h-6 text-[#F28482] mb-2" />
-            <h4 className="font-bold text-white mb-1">{t}</h4>
-            <p className="text-sm text-[#8D93AB]">{d}</p>
+          <div key={t} className="p-3 md:p-4 rounded-lg border border-[#F28482]/30 bg-[#F28482]/5">
+            <I className="w-5 h-5 md:w-6 md:h-6 text-[#F28482] mb-2" />
+            <h4 className="font-bold text-white text-sm md:text-base mb-1">{t}</h4>
+            <p className="text-xs md:text-sm text-[#8D93AB]">{d}</p>
           </div>
         ))}
       </div>
@@ -328,7 +328,7 @@ const COLUMNAS = ['Pendiente', 'En curso', 'Terminado'];
 
 export function ProcesoDigital({ agenda, ejecucion, onVolver }) {
   const res = useMemo(() => digitalizar(agenda), [agenda]);
-  const [paso, setPaso] = useState(0);
+  const [paso, setPaso] = useState(ejecucion > 0 ? 0 : 6);
   const [extra, setExtra] = useState([]);
   const [form, setForm] = useState({ texto: '', sala: 'bbc', dia: 2, inicio: h('17:00'), dur: 60 });
   const [aviso, setAviso] = useState(null);
@@ -338,8 +338,9 @@ export function ProcesoDigital({ agenda, ejecucion, onVolver }) {
 
   // animación del proceso, paso a paso
   useEffect(() => {
+    if (!ejecucion) return undefined; // si entras directamente, se muestra todo de golpe
     setPaso(0);
-    const t = [1, 2, 3, 4, 5, 6].map((n) => setTimeout(() => setPaso(n), n * 650));
+    const t = [1, 2, 3, 4, 5, 6].map((n) => setTimeout(() => setPaso(n), n * 500));
     return () => t.forEach(clearTimeout);
   }, [ejecucion]);
 
@@ -437,9 +438,9 @@ export function ProcesoDigital({ agenda, ejecucion, onVolver }) {
             <h3 className="text-xl font-bold text-white flex items-center gap-2"><CalendarCheck className="w-5 h-5 text-[#00E5FF]" /> Reservas · semana 47</h3>
             <div className="flex gap-3">{Object.keys(SALAS).map((s) => <Etiqueta key={s} sala={s} />)}</div>
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-5 gap-3">
+          <div className="flex lg:grid lg:grid-cols-5 gap-3 overflow-x-auto snap-x snap-mandatory -mx-4 px-4 lg:mx-0 lg:px-0 pb-2 no-scrollbar">
             {DIAS.map((d, i) => (
-              <div key={d} className="rounded-lg bg-[#151720] border border-[#8D93AB]/25 p-3 min-h-[120px]">
+              <div key={d} className="snap-start shrink-0 w-[46%] sm:w-[30%] lg:w-auto rounded-lg bg-[#151720] border border-[#8D93AB]/25 p-3 min-h-[120px]">
                 <p className="text-xs uppercase tracking-wider text-[#8D93AB] mb-2">{d}</p>
                 <div className="space-y-2">
                   {todas.filter((r) => r.dia === i).sort((a, b) => a.inicio - b.inicio).map((r) => (
@@ -502,7 +503,7 @@ export function ProcesoDigital({ agenda, ejecucion, onVolver }) {
             <p className="text-sm text-[#8D93AB] mb-4">Pulsa «Avanzar» para mover un encargo. Al terminarlo, el cliente recibe el aviso por WhatsApp; al empezar un Funko, se descuenta la resina.</p>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
               {COLUMNAS.map((c, ci) => (
-                <div key={c} className="rounded-lg bg-[#151720] border border-[#8D93AB]/25 p-3 min-h-[160px]">
+                <div key={c} className="rounded-lg bg-[#151720] border border-[#8D93AB]/25 p-3 sm:min-h-[160px]">
                   <p className="text-xs uppercase tracking-wider mb-3 font-bold" style={{ color: ['#8D93AB', '#FFD166', '#38E86B'][ci] }}>{c} · {kanban.filter((k) => k.col === ci).length}</p>
                   <div className="space-y-2">
                     {kanban.filter((k) => k.col === ci).map((k) => (
@@ -719,9 +720,9 @@ export function EjemploReal({ setAgenda, onProcesar }) {
   const campoR = 'bg-[#0B0C10] border border-[#8D93AB]/50 rounded-md p-2 text-white text-sm focus:outline-none focus:border-[#00E5FF] min-w-0';
 
   return (
-    <div className="rounded-2xl border-2 border-[#00E5FF] glow-box bg-[#0E1016] p-6 md:p-10">
+    <div className="rounded-2xl border-2 border-[#00E5FF] glow-box bg-[#0E1016] p-4 sm:p-6 md:p-10">
       <h3 className="text-3xl md:text-4xl font-playfair font-bold text-[#00E5FF] mb-3">Realiza el ejemplo real</h3>
-      <p className="text-lg text-[#8D93AB] max-w-3xl mb-8">
+      <p className="text-base md:text-lg text-[#8D93AB] max-w-3xl mb-6 md:mb-8">
         Haz una foto a un papel escrito a mano —una agenda, una lista de reservas, unas notas— y mira cómo se transcribe y pasa al sistema digital sin teclear nada. Escribe una línea por reserva con el día, la hora y qué es; por ejemplo: <span className="font-mano text-xl text-[#FFF59D]">«Miércoles · 17:00 Bautizo García BBC (2 h)»</span>.
       </p>
 

@@ -61,6 +61,7 @@ export default function FotartoWeb() {
     { id: 3, title: 'Pack Boda "Cine" 4K', price: 'desde 899€', desc: 'Cobertura total del evento + Reportaje cinematográfico.' },
     { id: 4, title: 'Sala Multiusos', price: '30€ / hora', desc: 'Ciclorama blanco, raíles de techo, ventanas de luz natural.' },
     { id: 5, title: 'Sala Cine de Acción', price: '45€ / hora', desc: 'Black box, iluminación LED RGB, máquinas de humo y atrezo.' },
+    { id: 8, title: 'Restauración de fotos', price: 'desde 15€', desc: 'Recuperamos fotos antiguas dañadas: limpieza, color y copia impresa.' },
     { id: 6, title: 'Bono Creativo (10h)', price: '250€', desc: '10 horas de estudio a tu disposición. Ahorra un 15%.' },
   ];
 
@@ -164,7 +165,7 @@ export default function FotartoWeb() {
       </header>
 
       {/* CONTENIDO PRINCIPAL */}
-      <main className="flex-grow max-w-6xl mx-auto w-full p-6 md:p-12">
+      <main className="flex-grow max-w-6xl mx-auto w-full px-4 py-6 sm:px-6 md:p-12">
         
         {/* --- SECCIÓN: FOTARTO --- */}
         {activeTab === 'Fotarto' && (
@@ -188,7 +189,7 @@ export default function FotartoWeb() {
               </div>
             </button>
 
-            <h2 className="text-4xl md:text-5xl font-playfair font-bold text-[#00E5FF] mb-4">¿Qué es Fotarto?</h2>
+            <h2 className="text-3xl md:text-5xl font-playfair font-bold text-[#00E5FF] mb-4">¿Qué es Fotarto?</h2>
             <div className="border-l-4 border-[#00E5FF] pl-6 py-2 mb-8 bg-gradient-to-r from-[#00E5FF]/10 to-transparent">
               <p className="text-xl md:text-2xl font-playfair italic text-white">
                 "Estudio de Fotografía en Esperanto, un idioma mezcla de varios idiomas que une también lenguas antiguas como el latín y las une a lenguas actuales."
@@ -207,7 +208,7 @@ export default function FotartoWeb() {
               <img 
                 src="assets/img/logo-fotarto.jpg" 
                 alt="Logotipo de Fotarto: cámara con diafragma turquesa y la letra f" 
-                className="w-full max-w-3xl mx-auto block rounded-xl border-2 border-[#00E5FF] glow-box"
+                className="w-full max-w-md md:max-w-lg mx-auto block rounded-xl border-2 border-[#00E5FF] glow-box"
               />
             </div>
           </section>
@@ -217,7 +218,7 @@ export default function FotartoWeb() {
         {activeTab === 'De dónde venimos' && (
           <section className="animate-in fade-in slide-in-from-bottom-4 duration-700 space-y-14">
             <div>
-              <h2 className="text-4xl md:text-5xl font-playfair font-bold text-[#00E5FF] mb-6">Nuestros Orígenes</h2>
+              <h2 className="text-3xl md:text-5xl font-playfair font-bold text-[#00E5FF] mb-6">Nuestros Orígenes</h2>
               <div className="text-lg text-[#8D93AB] space-y-4 leading-relaxed max-w-4xl">
                 <p>
                   Toda gran transformación tiene un punto de partida. En nuestra <strong className="text-white">«Empresa 0.0»</strong>, Fotarto era un estudio tradicional y lleno de talento, pero lastrado por procesos analógicos que frenaban nuestro potencial.
@@ -241,42 +242,42 @@ export default function FotartoWeb() {
         {/* --- SECCIÓN: A DONDE VAMOS --- */}
         {activeTab === 'A dónde vamos' && (
           <section className="animate-in fade-in slide-in-from-bottom-4 duration-700">
-            <h2 className="text-4xl md:text-5xl font-playfair font-bold text-[#00E5FF] mb-8">Transformación Digital</h2>
+            <h2 className="text-3xl md:text-5xl font-playfair font-bold text-[#00E5FF] mb-8">Transformación Digital</h2>
             <div className="text-lg text-[#8D93AB] mb-12 max-w-4xl">
               <p>
                 Dejamos atrás el papel para dar un salto hacia el futuro. Nuestro nuevo plan de digitalización integral interconecta todos los procesos del estudio, garantizando que el talento de nuestro equipo no se pierda en labores administrativas.
               </p>
             </div>
             
-            <div className="grid md:grid-cols-3 gap-6">
-              <div className="p-6 border border-[#8D93AB]/30 rounded-lg bg-[#151720] hover:border-[#00E5FF] transition-colors group">
-                <Camera className="w-12 h-12 text-[#8D93AB] group-hover:text-[#00E5FF] mb-4 transition-colors" />
-                <h3 className="text-xl font-bold text-white mb-2">Cloud ERP & Reservas</h3>
+            <div className="grid md:grid-cols-3 gap-3 md:gap-6">
+              <div className="p-4 md:p-6 border border-[#8D93AB]/30 rounded-lg bg-[#151720] hover:border-[#00E5FF] transition-colors group grid grid-cols-[auto_1fr] md:block gap-x-4 items-start">
+                <Camera className="w-9 h-9 md:w-12 md:h-12 row-span-2 text-[#8D93AB] group-hover:text-[#00E5FF] md:mb-4 transition-colors" />
+                <h3 className="text-lg md:text-xl font-bold text-white mb-1 md:mb-2">Cloud ERP & Reservas</h3>
                 <p className="text-[#8D93AB] text-sm">
                   Se acabaron los solapamientos. Un sistema en la nube con reservas online en tiempo real para nuestras 3 salas. El cliente decide, el sistema organiza.
                 </p>
               </div>
-              <div className="p-6 border border-[#8D93AB]/30 rounded-lg bg-[#151720] hover:border-[#00E5FF] transition-colors group">
-                <Aperture className="w-12 h-12 text-[#8D93AB] group-hover:text-[#00E5FF] mb-4 transition-colors" />
-                <h3 className="text-xl font-bold text-white mb-2">Control Kanban 3D</h3>
+              <div className="p-4 md:p-6 border border-[#8D93AB]/30 rounded-lg bg-[#151720] hover:border-[#00E5FF] transition-colors group grid grid-cols-[auto_1fr] md:block gap-x-4 items-start">
+                <Aperture className="w-9 h-9 md:w-12 md:h-12 row-span-2 text-[#8D93AB] group-hover:text-[#00E5FF] md:mb-4 transition-colors" />
+                <h3 className="text-lg md:text-xl font-bold text-white mb-1 md:mb-2">Control Kanban 3D</h3>
                 <p className="text-[#8D93AB] text-sm">
                   Seguimiento visual (Pendiente / En Curso / Terminado) para los encargos de Funkos 3D y restauraciones, con control de stock digital para que nunca falte resina.
                 </p>
               </div>
-              <div className="p-6 border border-[#8D93AB]/30 rounded-lg bg-[#151720] hover:border-[#00E5FF] transition-colors group">
-                <Send className="w-12 h-12 text-[#8D93AB] group-hover:text-[#00E5FF] mb-4 transition-colors" />
-                <h3 className="text-xl font-bold text-white mb-2">Avisos Automatizados</h3>
+              <div className="p-4 md:p-6 border border-[#8D93AB]/30 rounded-lg bg-[#151720] hover:border-[#00E5FF] transition-colors group grid grid-cols-[auto_1fr] md:block gap-x-4 items-start">
+                <Send className="w-9 h-9 md:w-12 md:h-12 row-span-2 text-[#8D93AB] group-hover:text-[#00E5FF] md:mb-4 transition-colors" />
+                <h3 className="text-lg md:text-xl font-bold text-white mb-1 md:mb-2">Avisos Automatizados</h3>
                 <p className="text-[#8D93AB] text-sm">
                   Cuando tu Funko o tus fotos están listas, el sistema te envía automáticamente un WhatsApp. Adiós a las llamadas telefónicas no contestadas.
                 </p>
               </div>
             </div>
 
-            <div id="proceso" className="mt-16 scroll-mt-[calc(var(--alto-cabecera,120px)+16px)]">
+            <div id="proceso" className="mt-10 md:mt-16 scroll-mt-[calc(var(--alto-cabecera,120px)+16px)]">
               <ProcesoDigital agenda={agenda} ejecucion={ejecucion} onVolver={() => irA('De dónde venimos')} />
             </div>
 
-            <div className="mt-16">
+            <div className="mt-10 md:mt-16">
               <EjemploReal setAgenda={setAgenda} onProcesar={() => { setEjecucion((n) => n + 1); document.getElementById('proceso')?.scrollIntoView({ behavior: 'smooth' }); }} />
             </div>
           </section>
@@ -285,7 +286,7 @@ export default function FotartoWeb() {
         {/* --- SECCIÓN: NUESTRO ESTUDIO --- */}
         {activeTab === 'Nuestro Estudio' && (
           <section className="animate-in fade-in slide-in-from-bottom-4 duration-700">
-            <h2 className="text-4xl md:text-5xl font-playfair font-bold text-[#00E5FF] mb-4">Nuestro Estudio</h2>
+            <h2 className="text-3xl md:text-5xl font-playfair font-bold text-[#00E5FF] mb-4">Nuestro Estudio</h2>
             <p className="text-lg text-[#8D93AB] mb-8 max-w-4xl">
               Así es Fotarto por dentro: tres salas especializadas, una recepción, una zona de edición y poscopia y, fuera de la vista del público, un taller privado de impresión 3D. Toca cada zona para verla por dentro.
             </p>
@@ -320,16 +321,16 @@ export default function FotartoWeb() {
         {/* --- SECCIÓN: TARIFAS --- */}
         {activeTab === 'Tarifas' && (
           <section className="animate-in fade-in slide-in-from-bottom-4 duration-700">
-            <h2 className="text-4xl md:text-5xl font-playfair font-bold text-[#00E5FF] mb-4">Nuestros Precios</h2>
-            <p className="text-[#8D93AB] mb-12">Calidad profesional, transparencia y tecnología al servicio de tu imagen.</p>
+            <h2 className="text-3xl md:text-5xl font-playfair font-bold text-[#00E5FF] mb-4">Nuestros Precios</h2>
+            <p className="text-[#8D93AB] mb-8 md:mb-12">Calidad profesional, transparencia y tecnología al servicio de tu imagen.</p>
             
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-5">
               {tarifas.map((item) => (
-                <div key={item.id} className="p-6 md:p-8 border border-[#8D93AB]/30 rounded-xl bg-gradient-to-b from-[#151720] to-[#0B0C10] hover:border-[#00E5FF] hover:-translate-y-1 transition-all duration-300 relative overflow-hidden group">
+                <div key={item.id} className="p-4 md:p-6 border border-[#8D93AB]/30 rounded-xl bg-gradient-to-b from-[#151720] to-[#0B0C10] hover:border-[#00E5FF] hover:-translate-y-1 transition-all duration-300 relative overflow-hidden group flex flex-col">
                   <div className="absolute top-0 right-0 w-24 h-24 bg-[#00E5FF]/5 rounded-bl-full -mr-4 -mt-4 transition-transform group-hover:scale-150"></div>
-                  <h3 className="text-xl font-bold text-white mb-2 font-playfair">{item.title}</h3>
-                  <div className="text-3xl font-bold text-[#00E5FF] mb-4">{item.price}</div>
-                  <p className="text-[#8D93AB] text-sm leading-relaxed">{item.desc}</p>
+                  <h3 className="text-base md:text-lg font-bold text-white mb-1 font-playfair leading-tight">{item.title}</h3>
+                  <div className="text-xl md:text-2xl font-bold text-[#00E5FF] mb-2 whitespace-nowrap">{item.price}</div>
+                  <p className="text-[#8D93AB] text-xs md:text-sm leading-relaxed">{item.desc}</p>
                 </div>
               ))}
             </div>
@@ -339,7 +340,7 @@ export default function FotartoWeb() {
         {/* --- SECCIÓN: CONTACTO --- */}
         {activeTab === 'Contacto' && (
           <section className="animate-in fade-in slide-in-from-bottom-4 duration-700">
-            <h2 className="text-4xl md:text-5xl font-playfair font-bold text-[#00E5FF] mb-8">Reserva tu sesión</h2>
+            <h2 className="text-3xl md:text-5xl font-playfair font-bold text-[#00E5FF] mb-8">Reserva tu sesión</h2>
             
             <div className="grid lg:grid-cols-2 gap-12 lg:items-start">
               {/* Formulario */}
@@ -394,20 +395,20 @@ export default function FotartoWeb() {
                   <h3 className="text-2xl font-playfair font-bold text-white mb-4 flex items-center gap-3">
                     <Users className="w-6 h-6 text-[#00E5FF]" /> Nuestro Equipo
                   </h3>
-                  <div className="grid sm:grid-cols-2 gap-3">
+                  <div className="grid grid-cols-2 gap-2 sm:gap-3">
                     {[
                       { nombre: 'Alba', email: 'alba@fotarto.luz' },
                       { nombre: 'AlexIA', email: 'alexia@fotarto.luz' },
                       { nombre: 'ClaudIA', email: 'claudia@fotarto.luz' },
                       { nombre: 'SonIA', email: 'sonia@fotarto.luz' },
                     ].map((p) => (
-                      <a key={p.email} href={`mailto:${p.email}`} className="flex items-center gap-3 p-4 bg-[#151720] rounded-lg border border-[#8D93AB]/30 hover:border-[#00E5FF] transition-colors group">
-                        <div className="w-11 h-11 shrink-0 rounded-full bg-[#00E5FF]/10 border border-[#00E5FF]/50 flex items-center justify-center font-playfair font-bold text-lg text-[#00E5FF]">
+                      <a key={p.email} href={`mailto:${p.email}`} className="flex items-center gap-2 sm:gap-3 p-2.5 sm:p-4 bg-[#151720] rounded-lg border border-[#8D93AB]/30 hover:border-[#00E5FF] transition-colors group min-w-0">
+                        <div className="w-9 h-9 sm:w-11 sm:h-11 shrink-0 rounded-full bg-[#00E5FF]/10 border border-[#00E5FF]/50 flex items-center justify-center font-playfair font-bold text-lg text-[#00E5FF]">
                           {p.nombre[0]}
                         </div>
                         <div className="min-w-0">
                           <p className="font-bold text-white">{p.nombre}</p>
-                          <p className="text-sm text-[#8D93AB] group-hover:text-[#00E5FF] transition-colors truncate">{p.email}</p>
+                          <p className="text-[11px] sm:text-sm text-[#8D93AB] group-hover:text-[#00E5FF] transition-colors truncate">{p.email}</p>
                         </div>
                       </a>
                     ))}
