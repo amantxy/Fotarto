@@ -55,7 +55,7 @@ export default function FunkoPagina({ onPedir }) {
   };
   const sorpresa = () => {
     const ropa = azar(O.ropa);
-    setO((x) => ({ ...x, piel: azar(O.piel), pelo: azar(O.pelo), peinado: azar(O.peinado), barba: azar(O.barba), gafas: azar(O.gafas), gorro: azar(O.gorro), ropa, ropaColor: ropa === 'uniforme' ? 'negro' : azar(O.ropaColor), objeto: azar(O.objeto) }));
+    setO((x) => ({ ...x, piel: azar(O.piel), pelo: azar(O.pelo), peinado: azar(O.peinado), barba: azar(O.barba), gafas: azar(O.gafas), gorro: azar(O.gorro), ojos: azar(O.ojos), accesorios: Object.keys(O.accesorios).filter(() => Math.random() < 0.25), ropa, ropaColor: ropa === 'uniforme' ? 'negro' : azar(O.ropaColor), objeto: azar(O.objeto) }));
   };
   const desdeFoto = (rasgos) => {
     setO((x) => ({ ...x, ...rasgos }));
@@ -95,9 +95,16 @@ export default function FunkoPagina({ onPedir }) {
             <Grupo titulo={`Tono de piel · ${nombreDe(O.piel, o.piel)}`}><Colores lista={O.piel} valor={o.piel} onElegir={(v) => cambia('piel', v)} /></Grupo>
             <Grupo titulo="Peinado">{Object.entries(O.peinado).map(([k, v]) => <Chip key={k} activo={o.peinado === k} onClick={() => cambia('peinado', k)}>{v}</Chip>)}</Grupo>
             <Grupo titulo={`Color de pelo · ${nombreDe(O.pelo, o.pelo)}`}><Colores lista={O.pelo} valor={o.pelo} onElegir={(v) => cambia('pelo', v)} /></Grupo>
+            <Grupo titulo={`Color de ojos · ${nombreDe(O.ojos, o.ojos)}`}><Colores lista={O.ojos} valor={o.ojos} onElegir={(v) => cambia('ojos', v)} /></Grupo>
             <Grupo titulo="Barba">{Object.entries(O.barba).map(([k, v]) => <Chip key={k} activo={o.barba === k} onClick={() => cambia('barba', k)}>{v}</Chip>)}</Grupo>
             <Grupo titulo="Gafas">{Object.entries(O.gafas).map(([k, v]) => <Chip key={k} activo={o.gafas === k} onClick={() => cambia('gafas', k)}>{v}</Chip>)}</Grupo>
             <Grupo titulo="En la cabeza">{Object.entries(O.gorro).map(([k, v]) => <Chip key={k} activo={o.gorro === k} onClick={() => cambia('gorro', k)}>{v}</Chip>)}</Grupo>
+            <Grupo titulo={`Accesorios · ${o.accesorios.length ? `${o.accesorios.length} elegido${o.accesorios.length > 1 ? 's' : ''}` : 'combina los que quieras'}`}>
+              {Object.entries(O.accesorios).map(([k, v]) => {
+                const on = o.accesorios.includes(k);
+                return <Chip key={k} activo={on} onClick={() => setO((x) => ({ ...x, accesorios: on ? x.accesorios.filter((a) => a !== k) : [...x.accesorios, k] }))}>{on && <Check className="w-3.5 h-3.5 inline -mt-0.5 mr-1" />}{v}</Chip>;
+              })}
+            </Grupo>
             <Grupo titulo="Ropa">{Object.entries(O.ropa).map(([k, v]) => <Chip key={k} activo={o.ropa === k} onClick={() => setO((x) => ({ ...x, ropa: k, ropaColor: COLOR_ROPA_DEFECTO[k] }))}>{v}</Chip>)}</Grupo>
             {o.ropa !== 'uniforme' && (
               <Grupo titulo={`${o.ropa === 'elegante' ? 'Color de la corbata' : 'Color de la ropa'} · ${nombreDe(O.ropaColor, o.ropaColor)}`}><Colores lista={O.ropaColor} valor={o.ropaColor} onElegir={(v) => cambia('ropaColor', v)} /></Grupo>
